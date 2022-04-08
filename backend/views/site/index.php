@@ -49,6 +49,7 @@ foreach ($days as $key => $day){
 }
 //print_r(Yii::$app->user->identity->organization_id);
 ?>
+
 <style>
     .block-items{
         display: flex;
