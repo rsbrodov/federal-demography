@@ -29,7 +29,17 @@ class ProductsSearch extends Products
 
     public function search($params)
     {
-        $query = Products::find();
+        //$query = Products::find();
+
+        $query = Products::find()->select(['products.*'])
+            ->with([
+                'category' => function($q){
+                    return $q->select(['id', 'name']);
+                },
+                'subcategory' => function($q){
+                    return $q->select(['id', 'name']);
+                }
+            ]);
 
         // add conditions that should always apply here
 
