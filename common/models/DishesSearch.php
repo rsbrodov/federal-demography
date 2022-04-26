@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\Dishes;
+use yii\db\Query;
 
 
 class DishesSearch extends Dishes
@@ -14,7 +15,6 @@ class DishesSearch extends Dishes
     public function rules()
     {
         return [
-            //[['id', 'status'], 'integer'],
             [['name', 'dishes_category_id', 'recipes_collection_id', 'techmup_number'], 'safe'],
         ];
     }
@@ -29,42 +29,45 @@ class DishesSearch extends Dishes
 
     public function search($params)
     {
+        $recipes_ids = [];
         if(Yii::$app->user->can('admin'))
         {
-            $recipes_ids = [];
             $recipes_collection = RecipesCollection::find()->where(['organization_id' => [7, Yii::$app->session['organization_id']]])->all();
-            foreach($recipes_collection as $r_collection){
-                $recipes_ids[] = $r_collection->id;
-            }
-
-            $query = Dishes::find()->where(['recipes_collection_id' => $recipes_ids]);
         }
-        /*elseif (Yii::$app->user->can('rospotrebnadzor_nutrition') || Yii::$app->user->can('rospotrebnadzor_camp')  || Yii::$app->user->can('subject_minobr')){
-            $recipes_ids = [];
-            $recipes_collection = RecipesCollection::find()->where(['organization_id' => [7, Yii::$app->session['organization_id']]])->all();
-            foreach($recipes_collection as $r_collection){
-                $recipes_ids[] = $r_collection->id;
-            }
-            $query = Dishes::find()->where(['recipes_collection_id' => $recipes_ids]);
-        }*/
         elseif (Yii::$app->request->pathInfo == 'dishes/dishes-base'){
-            $recipes_ids = [];
             $recipes_collection = RecipesCollection::find()->where(['organization_id' => [7, Yii::$app->user->identity->organization_id]])->all();
-            foreach($recipes_collection as $r_collection){
-                $recipes_ids[] = $r_collection->id;
-            }
-            $query = Dishes::find()->where(['recipes_collection_id' => $recipes_ids]);
         }
         elseif (Yii::$app->request->pathInfo == 'dishes' || Yii::$app->request->pathInfo == 'dishes/index'){
-            $recipes_ids = [];
             $recipes_collection = RecipesCollection::find()->where(['organization_id' => [Yii::$app->user->identity->organization_id]])->all();
-            foreach($recipes_collection as $r_collection){
-                $recipes_ids[] = $r_collection->id;
-            }
-            $query = Dishes::find()->where(['recipes_collection_id' => $recipes_ids]);
         }
 
-        // add conditions that should always apply here
+        foreach($recipes_collection as $r_collection){
+            $recipes_ids[] = $r_collection->id;
+        }
+        //count не считает вместе с селектом пришлось все делать через join
+        /*$query = Dishes::find()->select(['id', 'name', 'dishes_category_id', 'recipes_collection_id', 'description', 'culinary_processing_id', 'yield', 'number_of_dish', 'techmup_number',
+        ])->where(['recipes_collection_id' => $recipes_ids])
+            ->with([
+            'recipes' => function($q){
+                return $q->select(['id', 'name']);
+            },
+            'category' => function($q){
+                return $q->select(['id', 'name']);
+            }
+        ]);*/
+        $expression = "(SELECT COUNT(*) FROM dishes_products AS dp WHERE d.id = dp.dishes_id) AS products_count";
+        $query = (new Query())
+            ->select([
+                'd.id', 'd.name', 'd.dishes_category_id', 'd.recipes_collection_id', 'd.description',
+                'd.culinary_processing_id', 'd.yield', 'd.number_of_dish', 'd.techmup_number',
+                'rc.name as recipes_collection_name', 'dc.name as dishes_category_name',])
+            ->addSelect($expression)
+            ->from(['d' => 'dishes']) //алиас "d"
+            ->leftJoin('recipes_collection AS rc', 'd.recipes_collection_id = rc.id')
+            ->leftJoin('dishes_category AS dc', 'd.dishes_category_id = dc.id')
+            //->leftJoin('menus_dishes AS md', 'd.id = md.dishes_id')
+            ->where(['recipes_collection_id' => $recipes_ids])
+            ->groupBy('d.id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -79,9 +82,6 @@ class DishesSearch extends Dishes
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                //'forcePageParam' => false,
-                //'pageSizeParam' => false,
-                //'pageSize' => 2
             ]
         ]);
 
@@ -90,18 +90,6 @@ class DishesSearch extends Dishes
             ->andFilterWhere(['=', 'dishes_category_id', $this->dishes_category_id])
             ->andFilterWhere(['like', 'recipes_collection_id', $this->recipes_collection_id])
             ->andFilterWhere(['like', 'techmup_number', $this->techmup_number]);
-
-        /*$query->andFilterWhere(['like', 'ugroup', $this->ugroup]);
-
-        if(Yii::$app->user->can('admin')){
-            $query->andFilterWhere(['=', 'city_id', $this->city_id]);
-
-            $query->andFilterWhere(['like', 'ugroup', $this->ugroup]);
-        }*/
-
-
-
-
         return $dataProvider;
     }
 }

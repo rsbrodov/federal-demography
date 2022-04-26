@@ -102,9 +102,10 @@ $categories = ArrayHelper::merge($categories,$categories_bd);
             ],
             [
                 'attribute' => 'dishes_category_id',
-                'value' => function($model){
-                    return $model->get_category_dish($model->dishes_category_id);
-                },
+                'value' => 'dishes_category_name'/*function($model){
+                    //return $model->get_category_dish($model->dishes_category_id);
+                    //return $model->category->name;
+                }*/,
                 'filter' => $categories,
                 'headerOptions' => ['class' => 'grid_table_th text-nowrap'],
                 'contentOptions' => ['class' => ''],
@@ -112,9 +113,10 @@ $categories = ArrayHelper::merge($categories,$categories_bd);
             ],
             [
                 'attribute' => 'recipes_collection_id',
-                'value' => function($model){
-                    return $model->get_recipes($model->recipes_collection_id)->name;
-                },
+                'value' => 'recipes_collection_name'/*function($model){
+                    //return $model->get_recipes($model->recipes_collection_id)->name;
+                    //return $model->recipes->name;
+                }*/,
                 'filter' => $recipes,
                 'headerOptions' => ['class' => 'grid_table_th text-nowrap'],
                 'contentOptions' => ['class' => ''],
@@ -122,24 +124,24 @@ $categories = ArrayHelper::merge($categories,$categories_bd);
             ],
             [
                 'attribute' => 'Количество продуктов в блюде',
-                'value' => function($model){
-                    return $model->get_count_products($model->id);
-                },
+                'value' => 'products_count'/*function($model){
+                    //return $model->get_count_products($model->id);
+                }*/,
                 'filter' => $recipes,
                 'headerOptions' => ['class' => 'grid_table_th'],
                 'contentOptions' => ['class' => 'text-center'],
                 //'visible' => Yii::$app->user->can('admin'),
             ],
-            [
+            /*[
                 'attribute' => 'Сколько раз использовано в меню',
                 'value' => function($model){
-                    return $model->get_count_menus($model->id);
+                    //return $model->get_count_menus($model->id);
                 },
                 'filter' => $recipes,
                 'headerOptions' => ['class' => 'grid_table_th'],
                 'contentOptions' => ['class' => 'text-center'],
                 //'visible' => Yii::$app->user->can('admin'),
-            ],
+            ],*/
             'description:ntext',
             //'culinary_processing_id',
             [
@@ -259,7 +261,7 @@ $categories = ArrayHelper::merge($categories,$categories_bd);
                             'data-dishes_id' => $model->id,
                             'class'=>'btn btn-sm main-button-see',
                             'onclick' => '
-                          $.get("../menus-dishes/showtechmupadd?id=" + $(this).attr("data-dishes_id"), function(data){
+                          $.get("../menus-dishes/showtechmup?id=" + $(this).attr("data-dishes_id"), function(data){
                           $("#showTechmup .modal-body").empty();
                             $("#showTechmup .modal-body").append(data);
                             //console.log(data);
