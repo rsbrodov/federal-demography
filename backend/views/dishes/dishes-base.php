@@ -31,183 +31,175 @@ $categories = ArrayHelper::merge($categories,$categories_bd);
 ?>
 <div class="dishes-index mt-2">
     <h1 class="text-center"><?= Html::encode($this->title) ?></h1>
-<div class="mt-5">
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'options' => [
-            'class' => 'menus-table table-responsive'],
-        'tableOptions' => [
+    <div class="mt-5">
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'options' => [
+                'class' => 'menus-table table-responsive'],
+            'tableOptions' => [
                 'class' => 'table table-bordered table-responsive'
-        ],
-        'filterModel' => $searchModel,
-        'rowOptions' => ['class' => 'grid_table_tr'],
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn',
-                'headerOptions' => ['class' => 'grid_table_th'],
             ],
-            //'id',
-            [
-                'attribute' => 'recipes_collection_id',
-                'value' => function($model){
-                    return $model->get_recipes($model->recipes_collection_id)->name;
-                },
-                'filter' => $recipes,
-                'headerOptions' => ['class' => 'grid_table_th'],
-                'contentOptions' => ['class' => ''],
-                //'visible' => Yii::$app->user->can('admin'),
-            ],
-            [
-                'attribute' => 'dishes_category_id',
-                'value' => function($model){
-                    return $model->get_category_dish($model->dishes_category_id);
-                },
-                'filter' => $categories,
-                'headerOptions' => ['class' => 'grid_table_th text-nowrap'],
-                'contentOptions' => ['class' => ''],
-                //'visible' => Yii::$app->user->can('admin'),
-            ],
-            [
-                'attribute' => 'name',
-                'value' => 'name',
-                'headerOptions' => ['class' => 'grid_table_th'],
-                'contentOptions' => ['class' => ''],
-            ],
-            //'culinary_processing_id',
-            [
-                'attribute' => 'yield',
-                'value' => 'yield',
-                'headerOptions' => ['class' => 'grid_table_th'],
-                'contentOptions' => ['class' => 'text-center'],
-            ],
-            'description:ntext',
-            //'appearance',
-            //'consistency',
-            //'color',
-            //'taste',
-            //'smell',
-            [
-                'attribute' => 'techmup_number',
-                'value' => 'techmup_number',
-                'headerOptions' => ['class' => 'grid_table_th'],
-                'contentOptions' => ['class' => 'text-center'],
-            ],
-            //'number_of_dish',
-            //'created_at',
-            [
-                'header' => 'Просмотр техкарты',
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{view}',
-                'headerOptions' => ['class' => 'grid_table_th text-nowrap'],
-                'contentOptions' => ['class' => 'action-column text-center'],
-                'buttons' => [
-                    'view' => function ($url, $model, $key) {
-                        return Html::button('<span class="glyphicon glyphicon-list-alt text-nowrap"> из сборника</span>', [
-                            'title' => Yii::t('yii', 'Просмотр'),
-                            'data-toggle'=>'tooltip',
-                            //'class'=>'btn btn-sm btn-success',
-                            'data-dishes_id' => $model->id,
-                            'class'=>'btn btn-sm main-button-see',
-                            'onclick' => '
+            'filterModel' => $searchModel,
+            'rowOptions' => ['class' => 'grid_table_tr'],
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn',
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                ],
+                //'id',
+                [
+                    'attribute' => 'recipes_collection_id',
+                    'value' => 'recipes_collection_name',
+                    'filter' => $recipes,
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                    'contentOptions' => ['class' => ''],
+                    //'visible' => Yii::$app->user->can('admin'),
+                ],
+                [
+                    'attribute' => 'dishes_category_id',
+                    'value' => 'dishes_category_name',
+                    'filter' => $categories,
+                    'headerOptions' => ['class' => 'grid_table_th text-nowrap'],
+                    'contentOptions' => ['class' => ''],
+                    //'visible' => Yii::$app->user->can('admin'),
+                ],
+                [
+                    'attribute' => 'name',
+                    'value' => 'name',
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                    'contentOptions' => ['class' => ''],
+                ],
+                //'culinary_processing_id',
+                [
+                    'attribute' => 'yield',
+                    'value' => 'yield',
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                    'contentOptions' => ['class' => 'text-center'],
+                ],
+                'description:ntext',
+                //'appearance',
+                //'consistency',
+                //'color',
+                //'taste',
+                //'smell',
+                [
+                    'attribute' => 'techmup_number',
+                    'value' => 'techmup_number',
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                    'contentOptions' => ['class' => 'text-center'],
+                ],
+                //'number_of_dish',
+                //'created_at',
+                [
+                    'header' => 'Просмотр техкарты',
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}',
+                    'headerOptions' => ['class' => 'grid_table_th text-nowrap'],
+                    'contentOptions' => ['class' => 'action-column text-center'],
+                    'buttons' => [
+                        'view' => function ($url, $model, $key) {
+                            return Html::button('<span class="glyphicon glyphicon-list-alt text-nowrap"> из сборника</span>', [
+                                'title' => Yii::t('yii', 'Просмотр'),
+                                'data-toggle'=>'tooltip',
+                                //'class'=>'btn btn-sm btn-success',
+                                'data-dishes_id' => $model->id,
+                                'class'=>'btn btn-sm main-button-see',
+                                'onclick' => '
                           $.get("../menus-dishes/showtechmupadd?id=" + $(this).attr("data-dishes_id"), function(data){
                           $("#showTechmup .modal-body").empty();
                             $("#showTechmup .modal-body").append(data);
                             //console.log(data);
                             $("#showTechmup").modal("show");
                           });'
-                        ]);
-                    },
+                            ]);
+                        },
 
+                    ],
+                ]
+            ],
+        ]); ?>
+        <?
+        Yii::$app->params['bsVersion'];
+        echo ExportMenu::widget([
+            'dataProvider' => $dataProvider,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn',
+                    'headerOptions' => ['class' => 'grid_table_th'],
                 ],
-            ]
-        ],
-    ]); ?>
-    <?
-    Yii::$app->params['bsVersion'];
-    echo ExportMenu::widget([
-        'dataProvider' => $dataProvider,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn',
-                'headerOptions' => ['class' => 'grid_table_th'],
-            ],
-            //'id',
-            [
-                'attribute' => 'recipes_collection_id',
-                'value' => function($model){
-                    return $model->get_recipes($model->recipes_collection_id)->name;
-                },
-                'filter' => $recipes,
-                'headerOptions' => ['class' => 'grid_table_th'],
-                'contentOptions' => ['class' => ''],
-                //'visible' => Yii::$app->user->can('admin'),
-            ],
-            [
-                'attribute' => 'dishes_category_id',
-                'value' => function($model){
-                    return $model->get_category_dish($model->dishes_category_id);
-                },
-                'filter' => $categories,
-                'headerOptions' => ['class' => 'grid_table_th'],
-                'contentOptions' => ['class' => ''],
-                //'visible' => Yii::$app->user->can('admin'),
-            ],
-            [
-                'attribute' => 'name',
-                'value' => 'name',
-                'headerOptions' => ['class' => 'grid_table_th'],
-                'contentOptions' => ['class' => 'align-middle'],
-            ],
-            //'culinary_processing_id',
-            [
-                'attribute' => 'yield',
-                'value' => 'yield',
-                'headerOptions' => ['class' => 'grid_table_th'],
-                'contentOptions' => ['class' => 'align-middle text-center'],
-            ],
-            'description:ntext',
-            //'appearance',
-            //'consistency',
-            //'color',
-            //'taste',
-            //'smell',
-            [
-                'attribute' => 'techmup_number',
-                'value' => 'techmup_number',
-                'headerOptions' => ['class' => 'grid_table_th'],
-                'contentOptions' => ['class' => 'align-middle text-center'],
-            ],
-            //'number_of_dish',
-            //'created_at',
-            [
-                'header' => 'Просмотр техкарты',
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{view}',
-                'headerOptions' => ['class' => 'grid_table_th text-nowrap'],
-                'contentOptions' => ['class' => 'action-column align-middle'],
-                'buttons' => [
-                    'view' => function ($url, $model, $key) {
-                        return Html::button('<span class="glyphicon glyphicon-list-alt text-nowrap"> на 100 грамм</span>', [
-                            'title' => Yii::t('yii', 'Просмотр'),
-                            'data-toggle'=>'tooltip',
-                            //'class'=>'btn btn-sm btn-success',
-                            'data-dishes_id' => $model->id,
-                            'class'=>'btn btn-sm main-button-see',
-                            'onclick' => '
+                //'id',
+                [
+                    'attribute' => 'recipes_collection_id',
+                    'value' => 'recipes_collection_name',
+                    'filter' => $recipes,
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                    'contentOptions' => ['class' => ''],
+                    //'visible' => Yii::$app->user->can('admin'),
+                ],
+                [
+                    'attribute' => 'dishes_category_id',
+                    'value' => 'dishes_category_name',
+                    'filter' => $categories,
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                    'contentOptions' => ['class' => ''],
+                    //'visible' => Yii::$app->user->can('admin'),
+                ],
+                [
+                    'attribute' => 'name',
+                    'value' => 'name',
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                    'contentOptions' => ['class' => 'align-middle'],
+                ],
+                //'culinary_processing_id',
+                [
+                    'attribute' => 'yield',
+                    'value' => 'yield',
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                    'contentOptions' => ['class' => 'align-middle text-center'],
+                ],
+                'description:ntext',
+                //'appearance',
+                //'consistency',
+                //'color',
+                //'taste',
+                //'smell',
+                [
+                    'attribute' => 'techmup_number',
+                    'value' => 'techmup_number',
+                    'headerOptions' => ['class' => 'grid_table_th'],
+                    'contentOptions' => ['class' => 'align-middle text-center'],
+                ],
+                //'number_of_dish',
+                //'created_at',
+                [
+                    'header' => 'Просмотр техкарты',
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}',
+                    'headerOptions' => ['class' => 'grid_table_th text-nowrap'],
+                    'contentOptions' => ['class' => 'action-column align-middle'],
+                    'buttons' => [
+                        'view' => function ($url, $model, $key) {
+                            return Html::button('<span class="glyphicon glyphicon-list-alt text-nowrap"> на 100 грамм</span>', [
+                                'title' => Yii::t('yii', 'Просмотр'),
+                                'data-toggle'=>'tooltip',
+                                //'class'=>'btn btn-sm btn-success',
+                                'data-dishes_id' => $model->id,
+                                'class'=>'btn btn-sm main-button-see',
+                                'onclick' => '
                           $.get("../menus-dishes/showtechmupadd?id=" + $(this).attr("data-dishes_id"), function(data){
                           $("#showTechmup .modal-body").empty();
                             $("#showTechmup .modal-body").append(data);
                             //console.log(data);
                             $("#showTechmup").modal("show");
                           });'
-                        ]);
-                    },
+                            ]);
+                        },
 
-                ],
-            ]
+                    ],
+                ]
 
-        ],
-    ]);
-    ?>
-</div>
+            ],
+        ]);
+        ?>
+    </div>
 </div>
 <!--МОДАЛЬНОЕ ОКНО ДЛЯ ТЕХКАРТ-->
 <div id="showTechmup" class="modal fade">

@@ -5,6 +5,7 @@ namespace common\models;
 use Yii;
 use common\models\RecipesCollection;
 use common\models\DishesCategory;
+use yii\db\ActiveQuery;
 
 
 /**
@@ -29,6 +30,19 @@ class Dishes extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'dishes';
+    }
+
+    public function getRecipes()
+    {
+        return $this->hasOne(RecipesCollection::className(), ['id' => 'recipes_collection_id']);
+    }
+    public function getCategory()
+    {
+        return $this->hasOne(DishesCategory::className(), ['id' => 'dishes_category_id']);
+    }
+    public function getProducts(): ActiveQuery
+    {
+        return $this->hasMany(DishesProducts::className(), ['dishes_id' => 'id']);
     }
 
     /**

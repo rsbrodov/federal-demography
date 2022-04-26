@@ -82,138 +82,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="row pb-2">
                             <p class="text-center" style="margin: 0 auto; color:#78787a"><b>Справка меню</b></p>
                         </div>
-                    <?$standart = \common\models\Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'feeders_characters_id' => 3])->count();
-                    $sahar = \common\models\Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'feeders_characters_id' => 5])->count();
-                    $ovz = \common\models\Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'feeders_characters_id' => 4])->count();
-                    $cialic = \common\models\Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'feeders_characters_id' => 6])->count();
-                    $allergy = \common\models\Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'feeders_characters_id' => 10])->count();
-
-                    $characters_study = \common\models\Students::find()->where(['organization_id' => Yii::$app->user->identity->organization_id])->all();
-                    $character_sahar = 0; $character_cialic = 0; $character_ovz = 0; $character_allergy = 0;
-                    foreach ($characters_study as $c_study){
-                        if($c_study->dis_sahar > 0){
-                            $character_sahar++;
-                        }
-                        if($c_study->dis_cialic > 0){
-                            $character_cialic++;
-                        }
-                        if($c_study->dis_ovz > 0){
-                            $character_ovz++;
-                        }
-                        if($c_study->al_moloko > 0 || $c_study->al_yico > 0 || $c_study->al_fish > 0 || $c_study->al_chocolad > 0 || $c_study->al_orehi > 0 || $c_study->al_citrus > 0 || $c_study->al_med > 0 || $c_study->al_pshenica > 0 || $c_study->al_arahis > 0 || $c_study->al_inoe > 0){
-                            $character_allergy++;
-                        }
-                    }
-                    ?>
-                    <?if($standart > 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b>  Меню(без особенностей) </b>
-                           </div>
-                           <div class="col-5 text-success"><b> - Создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-                   <?if($standart == 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b> Меню(без особенностей) </b>
-                           </div>
-                           <div class="col-5 text-danger"><b> - Не создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-
-
-                   <?if($sahar > 0 && $character_sahar > 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b>  Меню(Дети с сахарным диабетом) </b>
-                           </div>
-                           <div class="col-5 text-success"><b> - Создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-                   <?if($sahar == 0 && $character_sahar > 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b> Меню(Дети с сахарным диабетом) </b>
-                           </div>
-                           <div class="col-5 text-danger"><b> - Не создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-
-
-
-                   <?if($ovz > 0 && $character_ovz > 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b>  Меню(Дети с ОВЗ) </b>
-                           </div>
-                           <div class="col-5 text-success"><b> - Создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-                   <?if($ovz == 0 && $character_ovz > 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b> Меню(Дети с ОВЗ) </b>
-                           </div>
-                           <div class="col-5 text-danger"><b> - Не создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-
-
-
-
-
-                   <?if($cialic > 0 && $character_cialic > 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b>  Меню(Дети с целиакией) </b>
-                           </div>
-                           <div class="col-5 text-success"><b> - Создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-                   <?if($cialic == 0 && $character_cialic > 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b> Меню(Дети с целиакией) </b>
-                           </div>
-                           <div class="col-5 text-danger"><b> - Не создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-
-
-
-
-                   <?if($allergy > 0 && $character_allergy > 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b>  Меню(Дети с пищевой аллергией) </b>
-                           </div>
-                           <div class="col-5 text-success"><b> - Создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-                   <?if($allergy == 0 && $character_allergy > 0){?>
-                       <div class="row pt-2">
-                           <div class="col-7"><b> Меню(Дети с пищевой аллергией) </b>
-                           </div>
-                           <div class="col-5 text-danger"><b> - Не создано </b>
-                           </div>
-                       </div>
-                   <?}?>
-
-
-                    </div>
-
-                <div class="col-4">
                 </div>
+               <div class="col-4"></div>
             </div>
             <?}?>
 
@@ -236,47 +106,34 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'attribute' => 'name',
                             'value' => 'name',
+                            'label' => 'Название',
                             'headerOptions' => ['class' => 'grid_table_th', 'style' => ['width' => '500px']],
                             'contentOptions' => ['class' => ''],
                         ],
                         [
                             'attribute' => 'feeders_characters_id',
-                            'value' => function ($model) {
-                                return $model->get_characters($model->feeders_characters_id);
-                            },
+                            'value' => 'feeders_characters_name',
+                            'label' => 'Характеристика питающихся',
                             'headerOptions' => ['class' => 'grid_table_th'],
                             'contentOptions' => ['class' => ''],
                         ],
                         [
                             'attribute' => 'age_info_id',
-                            'value' => function ($model) {
-                                return $model->get_age($model->age_info_id);
-                            },
+                            'value' => 'age_info_name',
+                            'label' => 'Возрастная категория',
                             'headerOptions' => ['class' => 'grid_table_th'],
                             'contentOptions' => ['class' => ''],
                         ],
-                        /*[
-                            'attribute' => 'Дни меню',
-                            'value' => function ($model) {
-                                return $model->get_days($model->id, 'name');
-                            },
-                            'headerOptions' => ['class' => 'grid_table_th', 'style' => ['width' => '300px']],
-                            'contentOptions' => ['class' => ''],
-                        ],*/
                         [
-                            'attribute' => 'cycle',
+                            'attribute' => 'Количество недель (цикл)',
                             'value' => 'cycle',
+                            'label' => 'Количество недель (цикл)',
                             'headerOptions' => ['class' => 'grid_table_th', 'style' => ['width' => '150px']],
                             'contentOptions' => ['class' => ''],
                         ],
                         [
                             'attribute' => 'Количество дней',
-                            'value' => function ($model) {
-                                $m_days = \common\models\MenusDays::find()->where(['menu_id' => $model->id])->count();
-                                $count = $m_days*$model->cycle;
-                                return $count;
-                            },
-                            'label' => 'Количество дней',
+                            'value' => 'days_count',
                             'headerOptions' => ['class' => 'grid_table_th', 'style' => ['width' => '100px']],
                             'contentOptions' => ['class' => ''],
                         ],

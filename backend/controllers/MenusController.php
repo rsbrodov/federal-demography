@@ -18,6 +18,7 @@ use common\models\MenusDays;
 use common\models\MenusDishes;
 use common\models\MenuForm;
 use yii\data\ActiveDataProvider;
+use yii\db\Query;
 use yii\helpers\Html;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -45,9 +46,15 @@ class MenusController extends Controller
 
     public function actionIndex()
     {
-
+        $expression = "(SELECT COUNT(*) * m.cycle FROM menus_days AS md WHERE m.id = md.menu_id) AS days_count";
         $dataProvider = new ActiveDataProvider([
-            'query' => Menus::find()->where(['status_archive' => 0, 'organization_id' => Yii::$app->user->identity->organization_id]),
+            'query' => (new Query())
+                ->select(['m.*', 'fc.name AS feeders_characters_name', 'ai.name AS age_info_name'])
+                ->addSelect($expression)
+                ->from(['m' => 'menus']) //алиас "d"
+                ->leftJoin('feeders_characters AS fc', 'm.feeders_characters_id = fc.id')
+                ->leftJoin('age_info AS ai', 'm.age_info_id = ai.id')
+                ->where(['status_archive' => 0, 'organization_id' => Yii::$app->user->identity->organization_id]),
             'pagination' => [
                 'pageSize' => 15,
             ],
