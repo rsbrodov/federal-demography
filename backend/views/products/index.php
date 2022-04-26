@@ -51,21 +51,21 @@ $sub_categories = ArrayHelper::merge($sub_categories,$sub_categories_bd);
                 'headerOptions' => ['class' => 'grid_table_th'],
                 'contentOptions' => ['class' => ''],
             ],
-            //'products_category_id',
             [
                 'attribute' => 'products_category_id',
+                'label' => 'Категория продукта',
                 'value' => function ($model) {
-                    return $model->get_category($model->products_category_id)->name;
+                    return $model->category->name;
                 },
                 'filter' => $p_cat,
                 'headerOptions' => ['class' => 'grid_table_th'],
                 'contentOptions' => ['class' => ''],
             ],
-            //'products_subcategory_id',
             [
                 'attribute' => 'products_subcategory_id',
+                'label' => 'Подкатегория продукта',
                 'value' => function ($model) {
-                    return $model->get_subcategory($model->products_subcategory_id)->name;
+                    return $model->subcategory->name;
                 },
                 'filter' => $sub_categories,
                 'headerOptions' => ['class' => 'grid_table_th'],
@@ -95,37 +95,7 @@ $sub_categories = ArrayHelper::merge($sub_categories,$sub_categories_bd);
                 'headerOptions' => ['class' => 'grid_table_th'],
                 'contentOptions' => ['class' => ''],
             ],
-            //'water',
-            //'protein',
-            //'fat',
-            //'carbohydrates_total',
-            //'carbohydrates_saccharide',
-            //'carbohydrates_starch',
-            //'carbohydrates_lactose',
-            //'carbohydrates_sacchorose',
-            //'carbohydrates_cellulose',
-            //'dust_total',
-            //'dust_nacl',
-            //'apple_acid',
-            //'na',
-            //'k',
-            //'ca',
-            //'mg',
-            //'p',
-            //'fe',
-            //'i',
-            //'se',
-            //'f',
-            //'vitamin_a',
-            //'vitamin_b_carotene',
-            //'vitamin_b1',
-            //'vitamin_b2',
-            //'vitamin_pp',
-            //'vitamin_c',
-            //'vitamin_d',
-            //'energy_kkal',
-            //'energy_kdj',
-            //'created_at',
+
 
             [
                 'header' => 'Настройки продукта',

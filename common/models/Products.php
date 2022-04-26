@@ -119,6 +119,19 @@ class Products extends \yii\db\ActiveRecord
             'created_at' => 'Создано',
         ];
     }
+
+    public function getCategory()
+    {
+        return $this->hasOne(ProductsCategory::className(), ['id' => 'products_category_id']);
+    }
+    public function getSubcategory()
+    {
+        return $this->hasOne(ProductsSubcategory::className(), ['id' => 'products_subcategory_id']);
+    }
+
+
+
+
     public function get_category($category_id){
         $category = ProductsCategory::findOne($category_id);
         return $category;
