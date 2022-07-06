@@ -613,7 +613,6 @@ else{
             <div class="container">
                 <div class="block" style="width: 100%!important;">
                     <canvas id="myChart" width="600" height="170"></canvas>
-
                 </div>
             </div>
             <br>

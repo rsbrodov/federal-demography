@@ -384,7 +384,7 @@ if(!empty($post)){
     </div>
     <br>
     <div class="text-center">
-        <?= Html::a('<span class="glyphicon glyphicon-download"></span> Скачать в Excel', ['export-prognos-storage?menu_id=' . $post['menu_id'].'&normativ='.$post['display_normativ'].'&brutto_netto='.$post['brutto_netto']],
+        <?= Html::a('<span class="glyphicon glyphicon-download"></span> Скачать в Excel', ['/prints/excel/export-prognos-storage?menu_id=' . $post['menu_id'].'&normativ='.$post['display_normativ'].'&brutto_netto='.$post['brutto_netto']],
             [
                 'class'=>'btn btn-secondary',
                 'style' =>['width'=>'500px'],

@@ -21,22 +21,15 @@ $this->title = 'Отчет по операторам питания';
 $this->params['breadcrumbs'][] = $this->title;
 
 $model_stolovaya = new \common\models\CharactersStolovaya();
-$organization_id = Yii::$app->user->identity->organization_id;
-
-$region_id = Organization::findOne($organization_id)->region_id;
+$region_id = Organization::findOne(Yii::$app->user->identity->organization_id)->region_id;
 
 if (Yii::$app->user->can('minobr') || Yii::$app->user->can('rospotrebnadzor_nutrition'))
 {
-    $municipalities = \common\models\Municipality::find()->where(['region_id' => $region_id])->all();
-    $municipality_items = ArrayHelper::map($municipalities, 'id', 'name');
-
+    $municipality_items = Yii::$app->territory->municipalities($region_id, true, false);
 }
 if (Yii::$app->user->can('subject_minobr'))
 {
-    $my_org = Organization::findOne($organization_id);
-    $municipalities = \common\models\Municipality::find()->where(['id' =>$my_org->municipality_id])->all();
-    $municipality_items = ArrayHelper::map($municipalities, 'id', 'name');
-
+    $municipality_items = Yii::$app->territory->my_municipality();
 }
 
 if (!empty($post))
@@ -47,7 +40,6 @@ if (!empty($post))
 ?>
 
 <h1 class="text-center"><?= Html::encode($this->title) ?></h1>
-
 
 <?php $form = ActiveForm::begin([]); ?>
 <div class="container mb-5 mt-5">
@@ -73,13 +65,6 @@ if (!empty($post))
                 ])->label('Муниципальный округ'); ?>
             <?}?>
         </div>
-<!--        <div class="col-md-6">-->
-<!--            --><?//= $form->field($model, 'id')->dropDownList($organization_items, [
-//                'class' => 'form-control text-center', 'options' => [$post['id'] => ['Selected' => true]],
-//            ])->label('Организация'); ?>
-<!--        </div>-->
-
-
     </div>
 
 
@@ -122,24 +107,6 @@ if (!empty($post))
     }
 
 ?>
-
-    <style>
-        th, td {
-            border: 1px solid black!important;
-            color: black;
-            font-size: 14px;
-
-        }
-        th {
-            background-color: #ede8b9;
-            font-size: 16px;
-        }
-        thead, th {
-            background-color: #ede8b9;
-            font-size: 16px;
-        }
-    </style>
-
     <div class="container">
         <table class="table_th0 table-responsive table-bordered">
             <tr class="">
@@ -175,3 +142,19 @@ JS;
 
 $this->registerJs($script, yii\web\View::POS_READY);
 ?>
+    <style>
+        th, td {
+            border: 1px solid black!important;
+            color: black;
+            font-size: 14px;
+
+        }
+        th {
+            background-color: #ede8b9;
+            font-size: 16px;
+        }
+        thead, th {
+            background-color: #ede8b9;
+            font-size: 16px;
+        }
+    </style>

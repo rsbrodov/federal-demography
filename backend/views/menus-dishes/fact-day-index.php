@@ -164,7 +164,7 @@ if(!empty($post)){
                 ],
             ]);
         }
-         if (Yii::$app->user->can('school_director') || Yii::$app->user->can('hidden_user'))
+         if (Yii::$app->user->can('school_director') || Yii::$app->user->can('hidden_user') || Yii::$app->user->can('medic') || Yii::$app->user->can('foodworker'))
         {
             $my_operetor_pitaniya = \common\models\NutritionApplications::find()->where(['sender_org_id' => Yii::$app->user->identity->organization_id, 'status' => 1])->orWhere(['reciever_org_id' => Yii::$app->user->identity->organization_id, 'status' => 1])->one();
             if(!empty($my_operetor_pitaniya)){
@@ -183,88 +183,6 @@ if(!empty($post)){
                 $my_sborniks = RecipesCollection::find()->select(['id'])->where(['organization_id' => [Yii::$app->user->identity->organization_id]])->all();
             }
             $recipes_collection = ArrayHelper::map($recipes_collections, 'id', 'name');
-            $my_sbornik_string = '';
-            $my_sbornik_array = array();
-            foreach ($my_sborniks as $my_sbornik) {
-                $my_sbornik_string .= $my_sbornik->id;
-                $my_sbornik_string .= ',';
-                $my_sbornik_array[] = $my_sbornik->id;
-            }
-            $my_sbornik_string .= '1,4,263';
-            $my_sbornik_array[]=1;
-            $my_sbornik_array[]=4;
-			$my_sbornik_array[]=263;
-            echo '<div class="d-none">'.$my_sbornik_string.'</div>';
-            //print_r($my_sbornik_string);
-            echo Select2::widget([
-                'name' => 'recipes_collection',
-                'value' => $my_sbornik_array,
-                'data' => $recipes_collection,
-                'options' => [
-                    'placeholder' => 'Выберите сборники...',
-                    'multiple' => true,
-                ],
-                'pluginEvents' => [
-                    "change" => 'function() { 
-                var data_id = $(this).val();
-                $(".select2-selection__choice").attr("data-info", data_id);
-            }',
-                ],
-            ]);
-        }
-		if (Yii::$app->user->can('medic'))
-        {
-            $recipes_collections = RecipesCollection::find()->where(['organization_id' => [7, Yii::$app->user->identity->organization_id]])->all();
-            $recipes_collection = ArrayHelper::map($recipes_collections, 'id', 'name');
-
-            $my_sborniks = RecipesCollection::find()->select(['id'])->where(['organization_id' => [Yii::$app->user->identity->organization_id]])->all();
-            //$my_sbornik_array = array();
-            //foreach ($my_sborniks as $my_sbornik) {
-            //    $my_sbornik_array [] = $my_sbornik->id;
-            //}
-            //$my_sbornik_array[]=1;
-            //$my_sbornik_array[]=4;
-            $my_sbornik_string = '';
-            $my_sbornik_array = array();
-            foreach ($my_sborniks as $my_sbornik) {
-                $my_sbornik_string .= $my_sbornik->id;
-                $my_sbornik_string .= ',';
-                $my_sbornik_array[] = $my_sbornik->id;
-            }
-            $my_sbornik_string .= '1,4,263';
-            $my_sbornik_array[]=1;
-            $my_sbornik_array[]=4;
-			$my_sbornik_array[]=263;
-            echo '<div class="d-none">'.$my_sbornik_string.'</div>';
-            //print_r($my_sbornik_string);
-            echo Select2::widget([
-                'name' => 'recipes_collection',
-                'value' => $my_sbornik_array,
-                'data' => $recipes_collection,
-                'options' => [
-                    'placeholder' => 'Выберите сборники...',
-                    'multiple' => true,
-                ],
-                'pluginEvents' => [
-                    "change" => 'function() { 
-                var data_id = $(this).val();
-                $(".select2-selection__choice").attr("data-info", data_id);
-            }',
-                ],
-            ]);
-        }
-		if (Yii::$app->user->can('foodworker'))
-        {
-            $recipes_collections = RecipesCollection::find()->where(['organization_id' => [7, Yii::$app->user->identity->organization_id]])->all();
-            $recipes_collection = ArrayHelper::map($recipes_collections, 'id', 'name');
-
-            $my_sborniks = RecipesCollection::find()->select(['id'])->where(['organization_id' => [Yii::$app->user->identity->organization_id]])->all();
-            //$my_sbornik_array = array();
-            //foreach ($my_sborniks as $my_sbornik) {
-            //    $my_sbornik_array [] = $my_sbornik->id;
-            //}
-            //$my_sbornik_array[]=1;
-            //$my_sbornik_array[]=4;
             $my_sbornik_string = '';
             $my_sbornik_array = array();
             foreach ($my_sborniks as $my_sbornik) {
@@ -295,6 +213,7 @@ if(!empty($post)){
                 ],
             ]);
         }
+		
         if (Yii::$app->user->can('medicine_director'))
         {
             $recipes_collections = RecipesCollection::find()->where(['organization_id' => [7, Yii::$app->user->identity->organization_id]])->all();

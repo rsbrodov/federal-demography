@@ -2,7 +2,7 @@
 
 use yii\bootstrap4\Html;
 use yii\helpers\ArrayHelper;
-
+$dishes_products_model = new \common\models\DishesProducts();
 ?>
 <div class="block ml-2 mt-3">
 <?php
@@ -44,7 +44,7 @@ echo '<p class="mb-0"><b>Категория блюда:</b> ' . \common\models\D
         </tr>
         <tbody>
         <? foreach ($correct_dishes as $key => $c_dish){?>
-            <? $carbohydrates_total_dish = round($m_dish->get_bju_dish_with_your_yield($c_dish->id, 'carbohydrates_total', $m_dish->yield),1);
+            <? $carbohydrates_total_dish = round($dishes_products_model->get_dish_bju($c_dish->id, 'carbohydrates_total'),1);
             if($check_carbo > $carbohydrates_total_dish){ $count++?>
             <tr>
                 <td class="text-center"><?=$count;?></td>

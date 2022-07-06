@@ -11,18 +11,24 @@ return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'homeUrl' =>'/',
-    'language' =>'RU',
+    'language' =>'ru',
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [
         'gridview' =>  [
             'class' => '\kartik\grid\Module',
         ],
+        'prints' => [
+            'class' => 'backend\modules\prints\PrintModules',
+        ],
     ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
             'baseUrl' => '',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
@@ -38,9 +44,9 @@ return [
         ],
          'db' => [
             'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=localhost;dbname=*******',
+            'dsn' => 'mysql:host=localhost;dbname=',
             'username' => 'root',
-            'password' => '',
+            'password' => 'Flvbygtgzrf2020!',
             'charset' => 'utf8',
         ],
         'mailer' => [
@@ -48,8 +54,8 @@ return [
             'transport' => [
                 'class' => 'Swift_SmtpTransport',
                 'host' => 'smtp.yandex.ru',
-                'username' => '*******',
-                'password' => '*******',
+                'username' => '1@niig.su',//1@niig.su
+                'password' => '',
                 'port' => 465,
                 'encryption' => 'ssl',
             ],
@@ -60,8 +66,8 @@ return [
             'transport' => [
                 'class' => 'Swift_SmtpTransport',
                 'host' => 'smtp.yandex.ru',
-                'username' => '*****',
-                'password' => '*****',
+                'username' => 'error@niig.su',
+                'password' => '',
                 'port' => 465,
                 'encryption' => 'ssl',
             ],
@@ -72,8 +78,8 @@ return [
             'transport' => [
                 'class' => 'Swift_SmtpTransport',
                 'host' => 'smtp.yandex.ru',
-                'username' => '*******',
-                'password' => '*******',
+                'username' => 'info@webozone.ru',
+                'password' => '',
                 'port' => 465,
                 'encryption' => 'ssl',
             ],
@@ -111,8 +117,14 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'expenses-food'],
                 '/login' => 'site/login',
             ],
+        ],
+
+        //myComponents
+        'territory' => [
+            'class' => 'app\components\TerritoryComponent',
         ],
         
     ],

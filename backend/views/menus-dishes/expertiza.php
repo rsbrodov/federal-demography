@@ -16,7 +16,10 @@ use yii\helpers\ArrayHelper;
 
 $this->title = 'Гигиеническая оценка меню';
 $this->params['breadcrumbs'][] = $this->title;
+$setting = \common\models\SettingsAdmin::find()->one();
 $kkal_neok_mas=[];
+$kkal_superok_mas=[];
+$yield_neok_mas = [];
 $my_menus = Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'status_archive' => 0])->all();
 $my_menus_items = ArrayHelper::map($my_menus, 'id', 'name');
 $first_menu = Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id])->one();
@@ -152,7 +155,7 @@ $md = new \common\models\MenusDishes();
             </div>
         </div>
         <?php ActiveForm::end(); ?>
-<!--        <p class="text-center text-danger" style="font-size: 20px;"><b>Раздел в разработке</b></p>-->
+<!--        <p class="text-center text-danger" style="font-size: 35px;"><b>Раздел на техническом обновлении</b></p>-->
     </div>
     <?if(Yii::$app->user->can('rospotrebnadzor_camp') || Yii::$app->user->can('rospotrebnadzor_nutrition') || Yii::$app->user->can('subject_minobr') || Yii::$app->user->can('minobr'))
     {
@@ -182,36 +185,6 @@ $md = new \common\models\MenusDishes();
             $duration_peremena = \common\models\SchoolBreak::find()->where(['organization_id' => Yii::$app->user->identity->organization_id])->max('duration');
         }
 
-        /*foreach ($characters_study as $ch_study){
-            if(!array_key_exists($ch_study->smena, $smena_items))
-            {
-                $smena_items[$ch_study->smena] = $ch_study->smena;
-                if(Yii::$app->user->can('rospotrebnadzor_camp') || Yii::$app->user->can('rospotrebnadzor_nutrition') || Yii::$app->user->can('subject_minobr') || Yii::$app->user->can('minobr')){
-                    $peremens = \common\models\CharactersStudy::find()->where(['organization_id' => Yii::$app->session['organization_id'], 'smena' =>$ch_study->smena])->orderby(['number_peremena' => SORT_ASC])->all();
-                }else{
-                    $peremens = \common\models\CharactersStudy::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'smena' =>$ch_study->smena])->orderby(['number_peremena' => SORT_ASC])->all();
-                }
-
-                foreach ($peremens as $peremen){
-
-                    if(!array_key_exists($ch_study->smena.'_'.$peremen->number_peremena, $peremena_items))
-                    {
-                        $peremena_items[$ch_study->smena.'_'.$peremen->number_peremena] = $peremen->number_peremena;
-                    }
-                }
-            }
-        }
-        //переборочный массив
-        $peremena_mas = [];
-        foreach ($peremena_items as $key => $peremena_item){
-            $masss = explode('_', $key);
-            $peremena_mas[$masss[0]][] = $masss[1];
-        }
-        //
-        $smena_string = '';
-        foreach ($smena_items as $smena_item){
-            $smena_string .= $smena_item. " ";
-        }*/
         $nutrition_string = '';
         $nutrition_string_count = 0;
         foreach ($menus_nutrition as $m_nutrition){$nutrition_string_count++;
@@ -288,8 +261,6 @@ $md = new \common\models\MenusDishes();
         $menus_dihes_model = New MenusDishes();
         $num_first_table = 0;
         $repeat_mas = $menus_dihes_model->get_repeat_dishes_correct($post_menu->id);
-        //print_r(Menus::findOne($menu_id)->id);
-
 
         ?>
         <div class="tables">
@@ -472,7 +443,18 @@ $md = new \common\models\MenusDishes();
                     if(!empty($value_vitamin['kkal_ok'])){
                         $kkal_string_ok .= \common\models\NutritionInfo::findOne($m_nutrition->nutrition_id)->name.' - '.count($value_vitamin['kkal_ok']).' дня(ей)';
                     }
-                    ?>
+                    if(!empty($value_vitamin['kkal_superok'])){
+                        $kkal_superok_mas[] = $value_vitamin['kkal_superok'];
+                    }
+
+                    //рассчитаем здесь инфу по массе продукта
+                    if(!empty($value_vitamin['yield_neok'])){
+                        $yield_string_neok .= \common\models\NutritionInfo::findOne($m_nutrition->nutrition_id)->name.' - '.count($value_vitamin['yield_neok']).' дня(ей)';
+                        $yield_neok_mas[] = $value_vitamin['yield_neok'];
+                    }
+                    else{
+                        $yield_string_ok .= \common\models\NutritionInfo::findOne($m_nutrition->nutrition_id)->name.' ';
+                    }?>
 <!--                    Выводим строчку по массе-->
                     <? $normativ_yield = \common\models\NormativVitaminDayNew::find()->where(['name' => 'yield', 'nutrition_id' => $m_nutrition->nutrition_id, 'age_info_id' => $my_menus->age_info_id])->one()->value/* + (\common\models\NormativVitaminDayNew::find()->where(['name' => 'yield', 'nutrition_id' => $m_nutrition->nutrition_id, 'age_info_id' => $my_menus->age_info_id])->one()->value *$lager_koef)*/;?>
                     <? $normativ_day = \common\models\NormativVitaminDay::find()->where(['name' => 'yield', 'age_info_id' => $my_menus->age_info_id])->one()->value/* + (\common\models\NormativVitaminDay::find()->where(['name' => 'yield', 'age_info_id' => $my_menus->age_info_id])->one()->value* $lager_koef)/* + (\common\models\NormativVitaminDayNew::find()->where(['name' => 'yield', 'nutrition_id' => $m_nutrition->nutrition_id, 'age_info_id' => $my_menus->age_info_id])->one()->value *$lager_koef)*/;?>
@@ -502,11 +484,17 @@ $md = new \common\models\MenusDishes();
 
                     <tr>
                         <td class=""><?=$vitamin_m;?></td>
-                        <td class="text-center <?if(ceil($value_vitamin[$key] * 10) / 10 < round($normativ_day * $nutrition_koeff,2)){echo 'bg-danger';}?>"><?=ceil($value_vitamin[$key] * 10) / 10;?></td>
-                        <td class="text-center"><?=round($normativ_day * $nutrition_koeff,1);?></td>
-                        <td class="text-center"><?=round(ceil($value_vitamin[$key] * 10) / 10/round($normativ_day * $nutrition_koeff,2), 2)*100;?>%</td>
-
-                        <td class="text-center"><?=round(ceil($value_vitamin[$key] * 10) / 10/$normativ_day, 2)*100;?>%</td>
+                        <?if($key == "kkal"){//КАЛОРИЙНОСТЬ МЫ ПОНИЖАЕМ НА 5% НОРМАТИВ ТИПО ЭТО ШАГ?>
+                            <td class="text-center <?if(ceil($value_vitamin[$key] * 10) / 10 < round($normativ_day * $nutrition_koeff*$setting->down_kkal_procent,2)){echo 'bg-danger';}?>"><?=ceil($value_vitamin[$key] * 10) / 10;?></td>
+                            <td class="text-center"><?=round(($normativ_day * $nutrition_koeff *$setting->down_kkal_procent),1);?> - <?=round(($normativ_day * $nutrition_koeff *$setting->hight_kkal_procent),1);?></td>
+                            <td class="text-center"><?=round(ceil($value_vitamin[$key] * 10*$setting->down_kkal_procent) / 10/round($normativ_day * $nutrition_koeff,2), 2)*100;?>%</td>
+                            <td class="text-center"><?=round(ceil($value_vitamin[$key] * 10*$setting->down_kkal_procent) / 10/$normativ_day, 2)*100;?>%</td>
+                        <?}else{?>
+                            <td class="text-center <?if(ceil($value_vitamin[$key] * 10) / 10 < round($normativ_day * $nutrition_koeff,2)){echo 'bg-danger';}?>"><?=ceil($value_vitamin[$key] * 10) / 10;?></td>
+                            <td class="text-center"><?=round($normativ_day * $nutrition_koeff,1);?></td>
+                            <td class="text-center"><?=round(ceil($value_vitamin[$key] * 10) / 10/round($normativ_day * $nutrition_koeff,2), 2)*100;?>%</td>
+                            <td class="text-center"><?=round(ceil($value_vitamin[$key] * 10) / 10/$normativ_day, 2)*100;?>%</td>
+                        <?}?>
                     </tr>
                     <?}?>
                     </tbody>
@@ -634,15 +622,7 @@ $md = new \common\models\MenusDishes();
                     </tbody>
                 </table>
 
-                <!--Рассчитаем здесь инфу по массе продукта-->
-                <? $normativ_yield = \common\models\NormativVitaminDayNew::find()->where(['name' => 'yield', 'nutrition_id' => $m_nutrition->nutrition_id, 'age_info_id' => $my_menus->age_info_id])->one()->value;
-                if(round($salt_sahar_mas[$m_nutrition->nutrition_id]['yield'], 1) < $normativ_yield){
-                    $yield_string_neok .= \common\models\NutritionInfo::findOne($m_nutrition->nutrition_id)->name.' ';
-                }
-                else{
-                    $yield_string_ok .= \common\models\NutritionInfo::findOne($m_nutrition->nutrition_id)->name.' ';
-                }
-                ?>
+
 
                 <!--Рассчитаем здесь инфу по калориям продукта-->
 <!--                --><?// $normativ_day = \common\models\NormativVitaminDay::find()->where(['name' => 'kkal', 'age_info_id' => $my_menus->age_info_id])->one()->value;
@@ -687,53 +667,6 @@ $md = new \common\models\MenusDishes();
     </div>
     <div class="container" style="font-size: 18px;">
         <p class="text-center" style="font-size: 20px;"><b>Фрагмент заключительной части экспертного заключения</b></p>
-
-            <!--СКРЫВАЕМ ПО ПРОСЬБЕ ИИ-->
-
-<!--        --><?//if(!Yii::$app->user->can('food_director')){?>
-<!--            <p >Учитывая режим функционирования общеобразовательной организации, обучающиеся 1-4 классов предусматривает --><?//if(count($smena_items) == 2){ echo 'две смены';}elseif (count($smena_items) == 1){ echo 'одну смену';}?><!--,-->
-<!--                продленного дня – нет. Для питания обучающихся 1-4 классов-->
-<!--                --><?//foreach ($smena_items as $smena_item){
-//                    $count_p = 0;
-//                    if($smena_item == 1){ echo ' в первую смену выделены ';
-//                        foreach ($peremena_mas[$smena_item] as $p){
-//                            $count_p++;
-//                            echo mb_strtolower(\common\models\SmenaPeremena::findOne($p)->name).' перемена ';
-//                            if(count($peremena_mas[$smena_item]) > 1 && count($peremena_mas[$smena_item]) != $count_p){
-//                                echo ' и ';
-//                            }
-//                        }
-//                    }
-//                    if($smena_item == 2){ echo ' во вторую смену выделены ';
-//                        foreach ($peremena_mas[$smena_item] as $p){
-//                            $count_p++;
-//                            echo mb_strtolower(\common\models\SmenaPeremena::findOne($p)->name).' перемена ';
-//                            if(count($peremena_mas[$smena_item]) > 1 && count($peremena_mas[$smena_item]) != $count_p){
-//                                echo ' и ';
-//                            }
-//                        }
-//                    }
-//                }?>
-<!--                . Продолжительность перемены – --><?//=$duration_peremena?><!-- минут.</p>-->
-<!--            --><?//}?>
-<!---->
-<!--        <p>--><?//=$notice_string?><!--. Все технологические карты заимствованы из --><?//=$recipes_string?><!--. В технологических картах-->
-<!--            приведена информация о технологии приготовления блюд, калорийности, содержании белков, жиров и углеводов, витаминов и минералов,-->
-<!--            для горячих блюд – информация о температуре их выдачи. Все технологические карты предусматривают использование щадящих способов-->
-<!--            кулинарной обработки для приготовления блюд. Использование полуфабрикатов в организации при приготовлении блюд меню не планируется.-->
-<!--            Наличие специализированной продукции, обогащенной витаминами и минералами в меню не предусмотрено-->
-<!--            (регион не входит в число эндемичных территорий, за исключением дефицита йода). Для приготовления блюд используется йодированная соль.</p>-->
-<!--        -->
-<!--            <p>--><?//if($cs_mas['sahar'] == 0 && $cs_mas['ovz'] == 0 && $cs_mas['fenilketon'] == 0 && $cs_mas['mukovis'] == 0 && $cs_mas['allergy'] == 0){
-//                echo 'Детей с сахарным диабетом, целиакией, пищевой аллергией, фенилкетонурией, муковисцидозом в организации – нет.';
-//            }else{
-//                echo $diseases_string;
-//            }?><!--</p>-->
-
-<!--        КОНЕЦ СКРЫТИ-->
-
-
-
 
         <p><b>Рассмотренное меню соответствует требованиям СанПиН 2.3/2.4.3590-20 по следующим пунктам: </b></p>
         <? $count = 1;?>
@@ -823,14 +756,9 @@ $md = new \common\models\MenusDishes();
                 <?}?>
 
             <?}?>
+            
 
-
-            <?if(!empty($yield_string_neok)){$count++;?>
-                <p class="ml-4"><?=$count?>. Суммарная масса блюд по приемам пищи (<?=mb_strtolower($yield_string_neok);?>) <b class="text-danger">не
-                        соответствует </b> регламентированным значениям для данной возрастной группы.  </p>
-            <?}?>
-
-            <?if(!empty($kkal_string_neok)){$count++;?><p class="ml-4"><?=$count?>. Калорийность меню <b class="text-danger">ниже регламентированных значений</b> по приемам пищи: <?//=$kkal_string_neok?> </p>
+            <?if(!empty($kkal_string_neok)){$count++;?><p class="ml-4 mt-4"><?=$count?>. Калорийность меню <b class="text-danger">ниже регламентированных значений</b> по приемам пищи: <?//=$kkal_string_neok?> </p>
             <table class="table_th0 table-hover ml-4" style="width: 60%; font-size: 14px;">
                 <thead>
                 <tr class="table-danger">
@@ -852,7 +780,7 @@ $md = new \common\models\MenusDishes();
                                 <td class="align-middle"><?= $explode_mas[1]?></td>
                                 <td class="align-middle"><?=\common\models\Days::findOne($explode_mas[2])->name; ?></td>
                                 <td class="text-center align-middle"><?=round($explode_mas[3],1) ?></td>
-                                <td class="text-center align-middle"><?=round($normativ_day*$nutrition_koeff,2);?></td>
+                                <td class="text-center align-middle"><?=round($normativ_day*$nutrition_koeff*$setting->down_kkal_procent,2);?></td>
                             </tr>
                         <?}
                     }
@@ -861,9 +789,71 @@ $md = new \common\models\MenusDishes();
             </table>
         <?}?>
 
+<!--        --><?//if(!empty($kkal_superok_mas)){$count++;?><!--<p class="ml-4 mt-4">--><?//=$count?><!--. Калорийность меню <b class="text-danger">выше регламентированных значений</b> по приемам пищи: --><?////=$kkal_string_neok?><!-- </p>-->
+<!--            <table class="table_th0 table-hover ml-4" style="width: 60%; font-size: 14px;">-->
+<!--                <thead>-->
+<!--                <tr class="table-danger">-->
+<!--                    <th class="text-center align-middle" rowspan="2" style="width: 20px">Прием пищи</th>-->
+<!--                    <th class="text-center align-middle" rowspan="2" style="width: 40px">Неделя</th>-->
+<!--                    <th class="text-center align-middle" rowspan="2" style="width: 40px">День</th>-->
+<!--                    <th class="text-center align-middle" rowspan="2" style="width: 40px">Значение</th>-->
+<!--                    <th class="text-center align-middle" rowspan="2" style="width: 40px">Норматив</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                --><?//foreach($kkal_superok_mas as $key => $kkal_superok_m){
+//                    if(!empty($kkal_superok_m)){
+//                        foreach($kkal_superok_m as $value_v){  $explode_mas = explode('_',$value_v);
+//                            $nutrition_koeff = \common\models\NutritionProcent::find()->where(['type_org' => $my_menus->type_org_id, 'nutrition_id' => $explode_mas[0]])->one()->procent/100;
+//                            $normativ_day = \common\models\NormativVitaminDay::find()->where(['name' => 'kkal', 'age_info_id' => $my_menus->age_info_id])->one()->value + (\common\models\NormativVitaminDay::find()->where(['name' => 'kkal', 'age_info_id' => $my_menus->age_info_id])->one()->value*$lager_koef);?>
+<!--                            <tr>-->
+<!--                                <td class="align-middle">--><?//=\common\models\NutritionInfo::findOne($explode_mas[0])->name; ?><!--</td>-->
+<!--                                <td class="align-middle">--><?//= $explode_mas[1]?><!--</td>-->
+<!--                                <td class="align-middle">--><?//=\common\models\Days::findOne($explode_mas[2])->name; ?><!--</td>-->
+<!--                                <td class="text-center align-middle">--><?//=round($explode_mas[3],1) ?><!--</td>-->
+<!--                                <td class="text-center align-middle">--><?//=round($normativ_day*$nutrition_koeff*$setting->hight_kkal_procent,2);?><!--</td>-->
+<!--                            </tr>-->
+<!--                        --><?//}
+//                    }
+//                }?>
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        --><?//}?>
+
+
+            <?if(!empty($yield_string_neok)){$count++;?><p class="ml-4 mt-4"><?=$count?>. Суммарная масса блюд <b class="text-danger">ниже регламентированных значений</b> по приемам пищи: <?//=$kkal_string_neok?> </p>
+                <table class="table_th0 table-hover ml-4" style="width: 60%; font-size: 14px;">
+                    <thead>
+                    <tr class="table-danger">
+                        <th class="text-center align-middle" rowspan="2" style="width: 20px">Прием пищи</th>
+                        <th class="text-center align-middle" rowspan="2" style="width: 40px">Неделя</th>
+                        <th class="text-center align-middle" rowspan="2" style="width: 40px">День</th>
+                        <th class="text-center align-middle" rowspan="2" style="width: 40px">Значение</th>
+                        <th class="text-center align-middle" rowspan="2" style="width: 40px">Норматив</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?foreach($yield_neok_mas as $key => $yield_neok_m){
+                        if(!empty($yield_neok_m)){
+                            foreach($yield_neok_m as $value_v){  $explode_mas = explode('_',$value_v);
+                                $normativ_day = \common\models\NormativVitaminDayNew::find()->where(['name' => 'yield', 'nutrition_id' => $explode_mas[0], 'age_info_id' => $my_menus->age_info_id])->one()->value;?>
+                                <tr>
+                                    <td class="align-middle"><?=\common\models\NutritionInfo::findOne($explode_mas[0])->name; ?></td>
+                                    <td class="align-middle"><?= $explode_mas[1]?></td>
+                                    <td class="align-middle"><?=\common\models\Days::findOne($explode_mas[2])->name; ?></td>
+                                    <td class="text-center align-middle"><?=round($explode_mas[3],1); ?></td>
+                                    <td class="text-center align-middle"><?=round($normativ_day,2);?></td>
+                                </tr>
+                            <?}
+                        }
+                    }?>
+                    </tbody>
+                </table>
+            <?}?>
+
 
             <?if(!empty($vitamins_neok)){$count++;?>
-                <p class="ml-4"><?=$count?>. Потребность в витаминах и минеральных веществах <b class="text-danger">не соответствует</b> регламентированным показателям:</p>
+                <p class="ml-4 mt-4"><?=$count?>. Потребность в витаминах и минеральных веществах <b class="text-danger">не соответствует</b> регламентированным показателям:</p>
                 <p class="text-danger ml-5" style="margin-top: -4px; font-style: italic">
                 <?foreach($vitamins_neok as $key => $vit){?>
                     <?= $vit." ";?>
@@ -878,9 +868,6 @@ $md = new \common\models\MenusDishes();
             <?}elseif(!empty($sahar_string_neok) && !empty($salt_string_neok)){$count++;?>
                 <p class="ml-4"><?=$count?>. <b class="text-danger">В меню превышены регламентированные уровни содержания соли и сахара.</b>  </p>
             <? }?>
-
-
-
         <?}?>
 
 
@@ -933,6 +920,7 @@ $md = new \common\models\MenusDishes();
 
         <br>
         <div class="text-center">
+            <p class="text-center"><b>Скачивание документа временно недоступно</b></p>
             <?= Html::a('<span class="glyphicon glyphicon-download" ></span> Скачать документ в PDF', ['expertiza-export-pdf?menu_id=' . $my_menus->id],
                 [
                     'class'=>'btn btn-danger',

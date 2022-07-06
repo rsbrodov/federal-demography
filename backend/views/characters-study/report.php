@@ -38,15 +38,13 @@ $region_id = Organization::findOne($organization_id)->region_id;
 
 if (Yii::$app->user->can('minobr') || Yii::$app->user->can('rospotrebnadzor_nutrition'))
 {
-    $municipalities = \common\models\Municipality::find()->where(['region_id' => $region_id])->all();
-    $municipality_items = ArrayHelper::map($municipalities, 'id', 'name');
+    $municipality_items = Yii::$app->territory->municipalities($region_id, true, false);
     $organization = Organization::find()->where(['type_org' => 3, 'region_id' => $region_id])->andWhere(['!=', 'id', 7])->all();
 }
 if (Yii::$app->user->can('subject_minobr'))
 {
     $my_org = Organization::findOne($organization_id);
-    $municipalities = \common\models\Municipality::find()->where(['id' =>$my_org->municipality_id])->all();
-    $municipality_items = ArrayHelper::map($municipalities, 'id', 'name');
+    $municipality_items = Yii::$app->territory->my_municipality();
     $organization = Organization::find()->where(['type_org' => 3, 'municipality_id' => $my_org->municipality_id])->all();
 }
 $organization_items = ArrayHelper::map($organization, 'id', 'title');
@@ -93,8 +91,6 @@ if (!empty($post))
                 'class' => 'form-control', 'options' => [$post['organization_id'] => ['Selected' => true]],
             ]); ?>
         </div>
-
-
     </div>
 
 
@@ -111,6 +107,7 @@ if (!empty($post))
     <?php ActiveForm::end(); ?>
 </div>
 <div>
+    
 <?if ($post){ ?>
     <?foreach ($students_classes as $model){
     $students = \common\models\Students::find()->where(['students_class_id' => $model->id])->all();
