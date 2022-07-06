@@ -24,11 +24,41 @@ $characters_items = ArrayHelper::map($characters, 'id', 'name');
 $param1 = ['options' =>[ $menus->feeders_characters_id => ['Selected' => true]], 'class'=>'form-control col-11 col-md-3'];
 $param2 = ['options' =>[ $menus->age_info_id => ['Selected' => true]], 'class'=>'form-control col-11 col-md-3'];
 $param3 = ['options' =>[ $menus->type_org_id => ['Selected' => true]], 'class'=>'form-control col-11 col-md-3'];
+$param_v = ['options' =>[ $menus->variativity => ['Selected' => true]]];
 $this->params['breadcrumbs'][] = 'Update';
 
 $type_org = \common\models\TypeOrganization::find()->where(['id' => [3,1,5,6]])->all();
 $type_org_items = ArrayHelper::map($type_org, 'id', 'name');
+
+$variativity_items = [
+    0 => 'Стандартное',
+    1 => 'Вариативное',
+];
 ?>
+<?$variativity_mas = [
+    'zavtrak' => [
+        'zavtrak_kashi_garniri_yaich' => 'zavtrak_kashi_garniri_yaich',
+        'zavtrak_masn_ryb' => 'zavtrak_masn_ryb',
+        'zavtrak_napitki' => 'zavtrak_napitki',
+        'zavtrak_souse' => 'zavtrak_souse',
+    ],
+    'obed' => [
+        'obed_pervie' => 'obed_pervie',
+        'obed_holod' => 'obed_holod',
+        'obed_garniri' => 'obed_garniri',
+        'obed_myasn_ryb' => 'obed_myasn_ryb',
+        'obed_napitki' => 'obed_napitki',
+        'obed_souse' => 'obed_souse',
+    ],
+    'ushin' => [
+        'ushin_holod' => 'ushin_holod',
+        'ushin_garniri' => 'ushin_garniri',
+        'ushin_myas_ryb' => 'ushin_myas_ryb',
+        'ushin_napitki' => 'ushin_napitki',
+        'ushin_souse' => 'ushin_souse',
+    ]
+
+];?>
 <style>
     .day-container{
         display:flex;
@@ -121,8 +151,80 @@ $type_org_items = ArrayHelper::map($type_org, 'id', 'name');
 
     <?= $form->field($model, 'date_end', $two_column)->textInput([ 'value' => date("d.m.Y", $menus->date_end), 'class'=>'datepicker-here form-control col-11 col-md-3 mb-3']) ?>
 
+    <?if(Yii::$app->user->can('admin')){?>
+        <div class="container">
+            <?= $form->field($model, 'variativity')->dropDownList($variativity_items, $param_v)->label('Вариативность') ?>
+            <div class="variativity">
+                <div class="border-block mt-3 ml-5">
+                    <p style="font-size: 18px;"><b>Завтраки<small>(отметьте нужные варианты галочками)</small></b></p>
+                    <div class="nutrition-container">
+                        <?foreach($variativity_mas['zavtrak'] as $v){?>
+                            <?if(\common\models\MenusVariativity::find()->where(['menu_id' => $menus->id, 'variativity_id' => \common\models\Variativity::find()->where(['name' => $v])->one()->block_id])->one()){?>
+                                <?= $form->field($model, $v)->checkbox([ 'value' => '1', 'checked ' => true]) ?>
+                            <?}else{?>
+                                <?= $form->field($model, $v)->checkbox() ?>
+                            <?}?>
+                        <?}?>
+                    </div>
+                </div>
+
+                <div class="border-block mt-3 ml-5">
+                    <p style="font-size: 18px;"><b>Обеды<small>(отметьте нужные варианты галочками)</small></b></p>
+                    <div class="nutrition-container">
+                        <?foreach($variativity_mas['obed'] as $v){?>
+                            <?if(\common\models\MenusVariativity::find()->where(['menu_id' => $menus->id, 'variativity_id' => \common\models\Variativity::find()->where(['name' => $v])->one()->block_id])->one()){?>
+                                <?= $form->field($model, $v)->checkbox([ 'value' => '1', 'checked ' => true]) ?>
+                            <?}else{?>
+                                <?= $form->field($model, $v)->checkbox() ?>
+                            <?}?>
+                        <?}?>
+                    </div>
+                </div>
+
+                <div class="border-block mt-3 ml-5">
+                    <p style="font-size: 18px;"><b>Ужины<small>(отметьте нужные варианты галочками)</small></b></p>
+                    <div class="nutrition-container">
+                        <?foreach($variativity_mas['ushin'] as $v){?>
+                            <?if(\common\models\MenusVariativity::find()->where(['menu_id' => $menus->id, 'variativity_id' => \common\models\Variativity::find()->where(['name' => $v])->one()->block_id])->one()){?>
+                                <?= $form->field($model, $v)->checkbox([ 'value' => '1', 'checked ' => true]) ?>
+                            <?}else{?>
+                                <?= $form->field($model, $v)->checkbox() ?>
+                            <?}?>
+                        <?}?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?}?>
+
     <div class="form-group justify-content-center text-center" style="margin-bottom: 135px">
         <?= Html::submitButton('Отредактировать меню', ['class' => 'mt-2 btn main-button-3 col-11 col-md-6']) ?>
     </div>
     <?php ActiveForm::end(); ?>
 </div>
+<?if($menus->variativity == 1){?>
+    <script>
+        $('.variativity').show();
+    </script>
+<?}else{?>
+    <script>
+        $('.variativity').hide();
+    </script>
+<?}?>
+<?
+//print_r($data);
+$script = <<< JS
+    var field2 = $('#menuform-variativity');
+    field2.on('change', function () {
+        if (field2.val() === "1") {
+            $('.variativity').show();
+        }
+        else{
+           $('.variativity').hide();
+        }
+    });
+    field2.trigger('change');
+JS;
+
+$this->registerJs($script, yii\web\View::POS_READY);
+?>

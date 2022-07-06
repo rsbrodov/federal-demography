@@ -23,17 +23,12 @@ use yii\helpers\ArrayHelper;
 $this->title = 'Характеристика детей и имеющихся меню';
 $this->params['breadcrumbs'][] = $this->title;
 
-$organization_id = Yii::$app->user->identity->organization_id;
-$region_id = Organization::findOne($organization_id)->region_id;
-$my_mun = Organization::findOne($organization_id)->municipality_id;
+$region_id = Organization::findOne(Yii::$app->user->identity->organization_id)->region_id;
+$my_mun = Yii::$app->territory->my_municipality_id();
 if(Yii::$app->user->can('rospotrebnadzor_nutrition') || Yii::$app->user->can('minobr')){
-    $municipalities = \common\models\Municipality::find()->where(['region_id' => $region_id])->all();
-    $municipality_null = array(0 => 'Все муниципальные округа ...');
-    $municipality_items = ArrayHelper::map($municipalities, 'id', 'name');
-    $municipality_items = ArrayHelper::merge($municipality_null, $municipality_items);
+    $municipality_items = Yii::$app->territory->municipalities();
 }else{
-    $municipalities = \common\models\Municipality::find()->where(['id' => $my_mun])->all();
-    $municipality_items = ArrayHelper::map($municipalities, 'id', 'name');
+    $municipality_items = Yii::$app->territory->my_municipality();
 }
 
 
@@ -58,9 +53,7 @@ if(!empty($post)){
             }
         }
 
-
-        $organization_id = Yii::$app->user->identity->organization_id;
-        $org = Organization::findOne($organization_id);
+        $org = Organization::findOne(Yii::$app->user->identity->organization_id);
         $organizations = Organization::find()->where(['id' => $ids])->andWhere(['!=', 'id', 7])->all();
 
     }
@@ -127,7 +120,7 @@ if(!empty($post)){
         </button>
     </div>
 </div>
-<p class="text-center"><b>Для крупных городов и муниципальных образований формирование отчета может занимать некоторое время</b></p>
+<p class="text-center"><b>Для крупных городов и муниципальных образований формирование отчета может занимать некоторое время (до 4-х минут)</b></p>
 
 <?php ActiveForm::end(); ?>
 

@@ -29,17 +29,13 @@ $my_menus = Menus::find()->where(['organization_id' => Yii::$app->user->identity
 $my_menus_items = ArrayHelper::map($my_menus, 'id', 'name');
 $first_menu = Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'status_archive' => 0])->one();
 
-if(Yii::$app->user->can('rospotrebnadzor_camp') || Yii::$app->user->can('rospotrebnadzor_nutrition') || Yii::$app->user->can('subject_minobr') || Yii::$app->user->can('minobr'))
-{
-    if (!empty(Yii::$app->session['organization_id']))
-    {
+if(Yii::$app->user->can('rospotrebnadzor_camp') || Yii::$app->user->can('rospotrebnadzor_nutrition') || Yii::$app->user->can('subject_minobr') || Yii::$app->user->can('minobr')) {
+    if (!empty(Yii::$app->session['organization_id'])) {
         $my_menus = Menus::find()->where(['organization_id' => Yii::$app->session['organization_id'], 'status_archive' => 0])->all();
         $my_menus_items = ArrayHelper::map($my_menus, 'id', 'name');
         $first_menu = Menus::find()->where(['organization_id' => Yii::$app->session['organization_id'], 'status_archive' => 0])->one();
-        //echo Yii::$app->session['organization_id'];
     }
-    else
-    {
+    else {
         $my_menus = Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'status_archive' => 0])->all();
         $my_menus_items = ArrayHelper::map($my_menus, 'id', 'name');
         $first_menu = Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'status_archive' => 0])->one();
@@ -82,6 +78,8 @@ if(!empty($post)){
     $nutritions_count = count($nutritions);
     $normativ_vitamin_day_vitamin_a = \common\models\NormativVitaminDay::find()->where(['name' => 'vitamin_a', 'age_info_id' => $my_menus->age_info_id])->one()->value;
     $normativ_vitamin_day_k = \common\models\NormativVitaminDay::find()->where(['name' => 'k', 'age_info_id' => $my_menus->age_info_id])->one()->value;
+
+    $variat = [];
 
 }
 
@@ -201,6 +199,11 @@ else{
                 <?}?>
             <?}?>
         <?}?>
+
+        <?if($my_menus->variativity == 1){?>
+            <p class="text-center mt-3" style="font-size: 18px;"><b>Данное меню является вариативным</b></p>
+        <?}?>
+
         <?php $count_cycle = 0;?>
         <?php foreach($cycle_ids as $cycle_id){ $count++;
             echo '<b><p class="mb-0 text-center" style="font-size: 20px; font-weight: 500;">Неделя '. $cycle_id .'</p></b>'
@@ -208,8 +211,22 @@ else{
 <? foreach($days as $day){?>
 <? echo '<b><p class="mb-0" style="font-size: 20px; font-weight: 500;">'. $day->name .'</p></b>'?>
 <?php $super_total_yield = 0; $super_total_protein = 0; $super_total_fat = 0; $super_total_carbohydrates_total = 0; $super_total_energy_kkal = 0; $super_total_vitamin_a = 0; $super_total_vitamin_c = 0; $super_total_vitamin_b1 = 0; $super_total_vitamin_b2 = 0; $super_total_vitamin_d = 0; $super_total_vitamin_pp = 0; $super_total_na = 0; $super_total_k = 0; $super_total_ca = 0; $super_total_f = 0; $super_total_se = 0; $super_total_p = 0; $super_total_i = 0; $super_total_mg = 0;?>
-    <?//$data[1]['yield'] = 0;//if(!empty($nutritions)){?>
+
     <? foreach($nutritions as $nutrition){?>
+        <?if($my_menus->variativity == 1){
+            $variat = [];
+            $dishes_nutrition = MenusDishes::find()->where(['date_fact_menu' => 0, 'menu_id' => $my_menus->id, 'cycle' => $cycle_id, 'days_id' => $day->id, 'nutrition_id' => $nutrition->id])->all();
+            $dishes_nutrition_c = MenusDishes::find()->where(['date_fact_menu' => 0, 'menu_id' => $my_menus->id, 'cycle' => $cycle_id, 'days_id' => $day->id, 'nutrition_id' => $nutrition->id])->count();
+            foreach ($dishes_nutrition as $d){
+                $dish = \common\models\Dishes::findOne($d->dishes_id);
+                $v = \common\models\Variativity::find()->where(['nutrition_id' => $nutrition->id, 'dishes_category_id' => $dish->dishes_category_id])->one()->block_id;
+                $mv = \common\models\MenusVariativity::find()->where(['menu_id' => $my_menus->id, 'variativity_id' => $v])->one();
+                if($v && $mv){
+                    $variat[$v]++;
+                }
+            }
+        }?>
+
     <div class="block mt-0" style="margin-top: 10px;">
         <table class="table_th0 table-hover table-responsive last" >
             <thead>
@@ -247,39 +264,49 @@ else{
             </tr>
             </thead>
             <tbody>
-        <? $count = 0;
+        <? $count = 0; $yield = 0;
         $indicator = 0; $energy_kkal = 0; $protein = 0; $fat = 0; $carbohydrates_total = 0; $vitamins = []; unset($vitamins); $vitamin_a = 0; $vitamin_c = 0; $vitamin_b1 = 0; $vitamin_b2 = 0; $vitamin_d = 0; $vitamin_pp = 0; $na = 0; $k = 0; $ca = 0; $f = 0; $p = 0; $se = 0; $i = 0; $mg = 0; $fe = 0;?>
         <?foreach($menus_dishes as $key => $m_dish){ ?>
                 <? if($nutrition->id == $m_dish->nutrition_id && $m_dish->cycle == $cycle_id && $day->id == $m_dish->days_id){ ?>
 
                 <? $count++;?>
+
+                <?$dish = \common\models\Dishes::findOne($m_dish->dishes_id);
+                $v = \common\models\Variativity::find()->where(['nutrition_id' => $nutrition->id, 'dishes_category_id' => $dish->dishes_category_id])->one()->block_id;
+                $mv = \common\models\MenusVariativity::find()->where(['menu_id' => $my_menus->id, 'variativity_id' => $v])->one();
+                if($v && $mv){
+                    $ident = $variat[$v];
+                }else{
+                    $ident = 1;
+                }?>
+
                 <!--ВЫВОД ПОСТРОЧНО КАЖДОГО БЛЮДА В РАЗАРЕЗЕ ПРИЕМА ПИЩИ-->
                 <tr data-id="<?= $m_dish->id;?>">
-                <td class="text-center"><?= $m_dish->get_techmup($m_dish->dishes_id)?></td>
+                <td class="text-center <?if($ident > 1){ echo \common\models\Variativity::find()->where(['block_id' => $v])->one()->color;}?>"><?= $m_dish->get_techmup($m_dish->dishes_id)?></td>
                 <td><?= $m_dish->get_dishes($m_dish->dishes_id)?></td>
 
-                <td class="text-center"><?= $m_dish->yield ?></td>
-                    <td class="text-center"><? $protein_dish = round($m_dish->get_bju_dish($m_dish->id, 'protein'),1); echo $protein_dish; $protein = $protein_dish + $protein;?></td>
-                    <td class="text-center"><? $fat_dish = round($m_dish->get_bju_dish($m_dish->id, 'fat'),1); echo $fat_dish; $fat = $fat_dish + $fat;?></td>
-                    <td class="text-center"><? $carbohydrates_total_dish = round($m_dish->get_bju_dish($m_dish->id, 'carbohydrates_total'),1); echo $carbohydrates_total_dish; $carbohydrates_total = $carbohydrates_total_dish + $carbohydrates_total; ?></td>
-                    <td class="text-center"><? $kkal = round($m_dish->get_kkal_dish($m_dish->id),1); echo $kkal; $energy_kkal = $energy_kkal + $kkal; ?></td>
-                    <? if($post['days_id'] == 1){?>
-                    <td class="text-center"><? $vitamins['vitamin_b1'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_b1'),2); echo $vitamins['vitamin_b1']; $vitamin_b1 = $vitamin_b1 + $vitamins['vitamin_b1']?></td>
-                    <td class="text-center"><? $vitamins['vitamin_b2'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_b2'),2); echo $vitamins['vitamin_b2']; $vitamin_b2 = $vitamin_b2 + $vitamins['vitamin_b2']?></td>
-                    <td class="text-center"><? $vitamins['vitamin_a'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_a'),2); echo $vitamins['vitamin_a']; $vitamin_a= $vitamin_a + $vitamins['vitamin_a']?></td>
-                    <td class="text-center"><? $vitamins['vitamin_d'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_d'),2); echo $vitamins['vitamin_d']; $vitamin_d = $vitamin_d + $vitamins['vitamin_d']?></td>
-                    <td class="text-center"><? $vitamins['vitamin_c'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_c'),2); echo $vitamins['vitamin_c']; $vitamin_c = $vitamin_c + $vitamins['vitamin_c']?></td>
-                    <td class="text-center"><? $vitamins['na'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'na'),2); echo $vitamins['na']; $na = $na + $vitamins['na']?></td>
-                    <td class="text-center"><? $vitamins['k'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'k'),2); echo $vitamins['k']; $k = $k + $vitamins['k']?></td>
-                    <td class="text-center"><? $vitamins['ca'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'ca'),2); echo $vitamins['ca']; $ca = $ca + $vitamins['ca']?></td>
-                        <td class="text-center"><? $vitamins['mg'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'mg'),2); echo $vitamins['mg']; $mg = $mg + $vitamins['mg']?></td>
-                        <td class="text-center"><? $vitamins['p'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'p'),2); echo $vitamins['p']; $p = $p + $vitamins['p']?></td>
-                        <td class="text-center"><? $vitamins['fe'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'fe'),2); echo $vitamins['fe']; $fe = $fe + $vitamins['fe']?></td>
-                        <td class="text-center"><? $vitamins['i'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'i'),2); echo $vitamins['i']; $i = $i + $vitamins['i']?></td>
-                    <td class="text-center"><? $vitamins['se'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'se'),2); echo $vitamins['se']; $se = $se + $vitamins['se']?></td>
-                        <td class="text-center"><? $vitamins['f'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'f'),2); echo $vitamins['f']; $f = $f + $vitamins['f']?></td>
+                <td class="text-center"><? $yield_dish = $m_dish->yield; echo $yield_dish; $yield = $yield + round($yield_dish/$ident, 1); ?></td>
+                <td class="text-center"><? $protein_dish = round($m_dish->get_bju_dish($m_dish->id, 'protein'),1); echo $protein_dish; $protein = $protein + round($protein_dish/$ident, 1);?></td>
+                <td class="text-center"><? $fat_dish = round($m_dish->get_bju_dish($m_dish->id, 'fat'),1); echo $fat_dish; $fat = $fat + round($fat_dish/$ident, 1);?></td>
+                <td class="text-center"><? $carbohydrates_total_dish = round($m_dish->get_bju_dish($m_dish->id, 'carbohydrates_total'),1); echo $carbohydrates_total_dish; $carbohydrates_total = $carbohydrates_total + round($carbohydrates_total_dish/$ident, 1); ?></td>
+                <td class="text-center"><? $kkal = round($m_dish->get_kkal_dish($m_dish->id),1); echo $kkal; $energy_kkal = $energy_kkal + round($kkal/$ident, 1); ?></td>
+                <? if($post['days_id'] == 1){?>
+                <td class="text-center"><? $vitamins['vitamin_b1'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_b1'),2); echo $vitamins['vitamin_b1']; $vitamin_b1 = $vitamin_b1 + round($vitamins['vitamin_b1']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['vitamin_b2'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_b2'),2); echo $vitamins['vitamin_b2']; $vitamin_b2 = $vitamin_b2 + round($vitamins['vitamin_b2']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['vitamin_a'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_a'),2); echo $vitamins['vitamin_a']; $vitamin_a= $vitamin_a + round($vitamins['vitamin_a']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['vitamin_d'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_d'),2); echo $vitamins['vitamin_d']; $vitamin_d = $vitamin_d + round($vitamins['vitamin_d']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['vitamin_c'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_c'),2); echo $vitamins['vitamin_c']; $vitamin_c = $vitamin_c + round($vitamins['vitamin_c']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['na'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'na'),2); echo $vitamins['na']; $na = $na + round($vitamins['na']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['k'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'k'),2); echo $vitamins['k']; $k = $k + round($vitamins['k']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['ca'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'ca'),2); echo $vitamins['ca']; $ca = $ca + round($vitamins['ca']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['mg'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'mg'),2); echo $vitamins['mg']; $mg = $mg + round($vitamins['mg']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['p'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'p'),2); echo $vitamins['p']; $p = $p + round($vitamins['p']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['fe'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'fe'),2); echo $vitamins['fe']; $fe = $fe + round($vitamins['fe']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['i'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'i'),2); echo $vitamins['i']; $i = $i + round($vitamins['i']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['se'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'se'),2); echo $vitamins['se']; $se = $se + round($vitamins['se']/$ident, 2)?></td>
+                <td class="text-center"><? $vitamins['f'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'f'),2); echo $vitamins['f']; $f = $f + round($vitamins['f']/$ident, 2)?></td>
 
-                    <?}?>
+                <?}?>
                 <? unset($menus_dishes[$key]); ?>
                 </tr>
         <?}else{break;}?>
@@ -291,7 +318,7 @@ else{
                 <td colspan="2">Итого за <? echo $nutrition->name?></td>
                 <!--МАССИВ data[<id приема пищи>][<название поля>] ХРАНИТ В СЕБЕ СРЕДНИЕ ПОКАЗАТЕЛИ ЗА <прием пищи>(т.е сумма за все завтраки, обеды и тд..) (самый низ таблицы)
                     $super_total_<название_поля> - ХРАНИТ ЗНАЧЕНИЕ 'ИТОГО ЗА ДЕНЬ'. РАСЧИТЫВАЕТСЯ ВСЕ В td и ниже вставляется в другие td-->
-                <td class="text-center"><? $yield = $model->get_total_yield($post['menu_id'], $cycle_id, $day->id, $nutrition->id); echo $yield; $data[$nutrition->id]['yield'] = $data[$nutrition->id]['yield'] + $yield; $super_total_yield = $super_total_yield + $yield;?></td>
+                <td class="text-center"><? echo $yield; $data[$nutrition->id]['yield'] = $data[$nutrition->id]['yield'] + $yield; $super_total_yield = $super_total_yield + $yield;?></td>
                 <td class="text-center"><? echo $protein; $data[$nutrition->id]['protein'] = $data[$nutrition->id]['protein'] + $protein; $super_total_protein = $super_total_protein + $protein;?></td>
                 <td class="text-center"><? echo $fat; $data[$nutrition->id]['fat'] = $data[$nutrition->id]['fat'] + $fat; $super_total_fat = $super_total_fat + $fat;?></td>
                 <td class="text-center"><? echo $carbohydrates_total; $data[$nutrition->id]['carbohydrates_total'] = $data[$nutrition->id]['carbohydrates_total'] + $carbohydrates_total; $super_total_carbohydrates_total = $super_total_carbohydrates_total + $carbohydrates_total;?></td>
@@ -564,7 +591,7 @@ else{
 <?php } ?>
     <br>
     <div class="text-center">
-        <?= Html::a('<span class="glyphicon glyphicon-download"></span> Скачать меню за период в Excel', ['export-menus-period?menu_id=' . $post['menu_id'].'&cycle='.$post['cycle'].'&him='.$post['days_id']],
+        <?= Html::a('<span class="glyphicon glyphicon-download"></span> Скачать меню за период в Excel', ['/prints/excel/export-menus-period-excel?menu_id=' . $post['menu_id'].'&cycle='.$post['cycle'].'&him='.$post['days_id']],
             [
                 'class'=>'btn btn-secondary',
                 'style' =>['width'=>'500px'],

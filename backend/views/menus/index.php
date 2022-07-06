@@ -86,6 +86,9 @@ $this->params['breadcrumbs'][] = $this->title;
                <div class="col-4"></div>
             </div>
             <?}?>
+            <div class="row pb-2">
+                <p class="text-center text-danger" style="margin: 0 auto;"><b>Внимание! Если у Вас истек срок действия меню по причине завершения учебного года, продлевать это меню не нужно. <br>Перед началом 2022-2023 учебного года Вы сможете либо продлить текущее меню, либо создать новое.</b></p>
+            </div>
 
 
 
@@ -112,14 +115,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         [
                             'attribute' => 'feeders_characters_id',
-                            'value' => 'feeders_characters_name',
+                            //'value' => 'feeders_characters_name',
+                            'value' => function($model){
+                                return $model->characters->name;
+                            },
                             'label' => 'Характеристика питающихся',
                             'headerOptions' => ['class' => 'grid_table_th'],
                             'contentOptions' => ['class' => ''],
                         ],
                         [
                             'attribute' => 'age_info_id',
-                            'value' => 'age_info_name',
+                            //'value' => 'age_info_name',
+                            'value' => function($model){
+                                return $model->age->name;
+                            },
                             'label' => 'Возрастная категория',
                             'headerOptions' => ['class' => 'grid_table_th'],
                             'contentOptions' => ['class' => ''],
@@ -133,7 +142,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                         [
                             'attribute' => 'Количество дней',
-                            'value' => 'days_count',
+                            'value' => function($model){
+                                return $model->cycle*\common\models\MenusDays::find()->where(['menu_id' => $model->id])->count();},
                             'headerOptions' => ['class' => 'grid_table_th', 'style' => ['width' => '100px']],
                             'contentOptions' => ['class' => ''],
                         ],

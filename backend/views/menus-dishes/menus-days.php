@@ -384,7 +384,7 @@ if(!empty($post)){
 
                 <div class="text-center mt-3">
                     <?= Html::a('<span class="glyphicon glyphicon-download"></span> Скачать меню за день в Excel формате', [
-                        'menus-days-export-excel?menu_id=' . $menu_id .'&cycle='.$cycle.'&days_id='.$days_id
+                        '/prints/excel/menus-days-export-excel?menu_id=' . $menu_id .'&cycle='.$cycle.'&days_id='.$days_id
                     ],
                         [
                             'class'=>'btn btn-success',

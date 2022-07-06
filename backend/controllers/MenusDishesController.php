@@ -10,6 +10,7 @@ use common\models\DateForm;
 use common\models\Dishes;
 use common\models\Kids;
 use common\models\Medicals;
+use common\models\MenusDishes2;
 use common\models\Municipality;
 use common\models\Organization;
 use common\models\ProductsAllergen;
@@ -87,7 +88,6 @@ class MenusDishesController extends Controller
     public function actionIndex()
     {
         $model = new MenusDishes();
-        //$menus_dishes = MenusDishes::find()->where(['menu_id' => 21, 'cycle' => 2, 'days_id' => 1])->orderby(['nutrition_id'=>SORT_ASC])->all();
 
 
         if (Yii::$app->request->post())
@@ -104,13 +104,7 @@ class MenusDishesController extends Controller
             $nutritions = NutritionInfo::find()->where(['id' => $ids])->all();//ОБЪЕКТ С НАБОРОМ ПРИЕМОВ ПИЩИ ИЗ БАЗЫ С УЧЕТОМ НАШИХ АЙДИ
 
             $menus_dishes = MenusDishes::find()->where(['menu_id' => $post['menu_id'], 'cycle' => $post['cycle'], 'days_id' => $post['days_id'], 'date_fact_menu' => 0])->orderby(['nutrition_id' => SORT_ASC])->all();
-            /*$menus_dishes = MenusDishes::find()->
-            select(['menus_dishes.id as id', 'menus_dishes.date_fact_menu as date_fact_menu', 'menus_dishes.menu_id as menu_id', 'menus_dishes.cycle as cycle', 'menus_dishes.days_id as days_id', 'menus_dishes.nutrition_id as nutrition_id', 'menus_dishes.dishes_id as dishes_id', 'menus_dishes.yield as yield', 'dishes_category.sort as sort'])->
-            leftJoin ('dishes', 'menus_dishes.dishes_id = dishes.id')->
-            leftJoin ('dishes_category', 'dishes.dishes_category_id = dishes_category.id')->
-            where(['date_fact_menu' => 0, 'menu_id' => $post['menu_id']])->
-            orderby(['cycle' => SORT_ASC, 'days_id' => SORT_ASC, 'nutrition_id' => SORT_ASC, 'sort'=>SORT_ASC])->
-            all();*/
+
             return $this->render('index', [
                 'menus_dishes' => $menus_dishes,
                 'nutritions' => $nutritions,
@@ -1188,8 +1182,10 @@ class MenusDishesController extends Controller
         $model = new TechmupForm();
         if (Yii::$app->request->post())
         {
-            $post = Yii::$app->request->post()['TechmupForm'];
+            //$post = Yii::$app->request->post()['TechmupForm'];
+            $post = Yii::$app->request->post();
             $dishes = Dishes::findOne($post['dishes_id']);
+            //print_r($post);exit;
             if (empty($dishes))
             {
                 Yii::$app->session->setFlash('error', "Блюдо не найдено");
@@ -3062,7 +3058,7 @@ class MenusDishesController extends Controller
         $sheet->setCellValue('B' . 1, 'Организация: '.Organization::findOne($my_menus->organization_id)->title);
         $sheet->setCellValue('B' . 2, 'Название меню: '.$my_menus->name);
         $sheet->setCellValue('B' . 3, 'Возрастная категория: '.AgeInfo::findOne($my_menus->age_info_id)->name);
-        $sheet->setCellValue('B' . 4, 'Характеристика питающихся: '.FeedersCharacters::findOne($my_menus->age_info_id)->name);
+        $sheet->setCellValue('B' . 4, 'Характеристика питающихся: '.FeedersCharacters::findOne($my_menus->feeders_characters_id)->name);
         $sheet->setCellValue('B' . 5, 'Срок действия меню: '.date('d.m.Y', $my_menus->date_start).' - '.date('d.m.Y', $my_menus->date_end));
 
         $sheet->setCellValue('A' . $num_st, "№ рецептуры");
@@ -4363,7 +4359,7 @@ class MenusDishesController extends Controller
                     }
                 }
 
-
+            //$data_vit_a = round($data[$nutrition->id]['vitamin_a']/$count_my_days, 2);$procent = \common\models\NutritionProcent::find()->where(['nutrition_id' =>$nutrition->id])->one()->procent/100; if($data_vit_a <= $normativ_vitamin_day_vitamin_a*1.5*$procent){ $data_itog['vitamin_a'] = $data_itog['vitamin_a'] + $data_vit_a;}else{$data_itog['vitamin_a'] = $data_itog['vitamin_a'] + $normativ_vitamin_day_vitamin_a*1.5*$procent;}
             $data_vit_a = round($data[$nutrition->id]['vitamin_a']/$count_my_days, 2);$procent = \common\models\NutritionProcent::find()->where(['type_org' => $menu_id->type_org_id, 'nutrition_id' =>$nutrition->id])->one()->procent/100; if($data_vit_a <= $normativ_vitamin_day_vitamin_a*1.5*$procent){ $data_itog['vitamin_a'] = $data_itog['vitamin_a'] + $data_vit_a;}else{$data_vit_a = $normativ_vitamin_day_vitamin_a*1.5*$procent; $data_itog['vitamin_a'] = $data_itog['vitamin_a'] + $data_vit_a;}
             $data_vit_k = round($data[$nutrition->id]['vitamin_k']/$count_my_days, 2);$procent = \common\models\NutritionProcent::find()->where(['type_org' => $menu_id->type_org_id, 'nutrition_id' =>$nutrition->id])->one()->procent/100; if($data_vit_k <= $normativ_vitamin_day_k*1.5*$procent){ $data_itog['vitamin_k'] = $data_itog['vitamin_k'] + $data_vit_k;}else{$data_vit_k = $normativ_vitamin_day_k*1.5*$procent; $data_itog['vitamin_k'] = $data_itog['vitamin_k'] + $data_vit_k;}
             $sheet->setCellValue('B' . $num, 'Средние показатели за ' . $nutrition->name);
@@ -7378,12 +7374,12 @@ require_once Yii::$app->basePath . '/Excel/PHPExcel.php';
     {
         ini_set('max_execution_time', 3600);
         ini_set('memory_limit', '5092M');
-        $model = new MenusDishes();
+        $model = new DateForm();
 
 
         if (Yii::$app->request->post())
         {
-            $post = Yii::$app->request->post()['MenusDishes'];
+            $post = Yii::$app->request->post()['DateForm'];
             return $this->render('report-school-little3', [
                 'model' => $model,
                 'post' => $post,
@@ -9103,6 +9099,7 @@ require_once Yii::$app->basePath . '/Excel/PHPExcel.php';
         $vitamins_mas=[];$vitamins_mas['kkal'] = 'Калорийность, ккал.';$vitamins_mas['protein'] = 'Количество белков (г)';$vitamins_mas['fat'] = 'Количество жиров (г)';$vitamins_mas['carbohydrates'] = 'Количество углеводов (г)';$vitamins_mas['vitamin_c'] = 'Витамин С, мг';$vitamins_mas['vitamin_b1'] = 'Витамин В1, мг';$vitamins_mas['vitamin_b2'] = 'Витамин В2, мг';$vitamins_mas['vitamin_a'] = 'Витамин А, мкг рэ';$vitamins_mas['ca'] = 'Кальций, мг';$vitamins_mas['mg'] = 'Магний, мг';$vitamins_mas['fe'] = 'Железо, мг ';$vitamins_mas['k'] = 'Калий, мг ';$vitamins_mas['i'] = 'Йод, мкг ';$vitamins_mas['se'] = 'Селен, мкг ';
         $effect_bad = [];$effect_bad['vitamin_c'] = 'Быстрая утомляемость, отдышка при незначительной физической нагрузке, слабый иммунитет. При длительном дефиците развивается цинга. Снижение резистентности организма.';$effect_bad['vitamin_b1'] = 'Повышенная утомляемость и раздражительность, ухудшение памяти';$effect_bad['vitamin_b2'] = 'Появляются трещинки и слущивания кожи в губ и области носа, светобоязнь, слезоточивость, конъюктивит. Появляется  раздражительность , появляется мышечная слабость и боли в конечностях. Дерматиты, нарушения зрения.';$effect_bad['vitamin_a'] = 'Сухость кожи и слизистых оболочек';$effect_bad['ca'] = 'Ломкость волос, слоение ногтей, кариес, ослабевание иммунитета. Замедляются процессы роста и развития, появляется склонность к переломам, вывихам. Риски кариеса, риски переломов трубчатых костей';$effect_bad['mg'] = 'Выпадение волос и ломкость ногтей, сухость и шелушение кожи, проблемы с пищеварением, повышенное давление, боли в мышцах и суставах. Кроме того при дефиците магния происходят сбои в работе надпочечников, развиваются болезни сердечно-сосудистой системы и начальные стадии диабета, увеличивается риск появления опухолевых образований и камней в почках. Риски формирования заболеваний органов пищеварения и болезней системы кровообращения';$effect_bad['fe'] = 'Снижение концентрации, нарушения сна, развитие анемии, задержка умственного развития. Риски анемии, нарушения сна';$effect_bad['i'] = 'Нарушения работы нервной системы, физического и умственного развития. Дефицит йода влечет за собой возникновение различных патологий, таких как нарушение синтеза гормонов щитовидной железы, появление зоба, снижение памяти и слуха, повышение уровня холестерина в крови, брадикардию, расстройство стула, снижение иммунитета. Риски снижения памяти и слуха, патологии нервной системы';
         $kkal_neok_mas=[];
+        $yield_neok_mas=[];
 
         $lager_koef = 0;
         if($my_menus->type_org_id == 1){//если меню предназначено для лагеря
@@ -9363,6 +9360,13 @@ require_once Yii::$app->basePath . '/Excel/PHPExcel.php';
                     $kkal_string_ok .= \common\models\NutritionInfo::findOne($m_nutrition->nutrition_id)->name . ' - ' . count($value_vitamin['kkal_ok']) . ' дня(ей)';
                 }
 
+                if(!empty($value_vitamin['yield_neok'])){
+                    $yield_string_neok .= \common\models\NutritionInfo::findOne($m_nutrition->nutrition_id)->name.' - '.count($value_vitamin['yield_neok']).' дня(ей)';
+                    $yield_neok_mas[] = $value_vitamin['yield_neok'];
+                }
+                else{
+                    $yield_string_ok .= \common\models\NutritionInfo::findOne($m_nutrition->nutrition_id)->name.' ';
+                }
 
                 //Выводим строчку по массе
                     $normativ_yield = \common\models\NormativVitaminDayNew::find()->where(['name' => 'yield', 'nutrition_id' => $m_nutrition->nutrition_id, 'age_info_id' => $post_menu->age_info_id])->one()->value;
@@ -9641,10 +9645,6 @@ require_once Yii::$app->basePath . '/Excel/PHPExcel.php';
                 }
             }
 
-            if(!empty($yield_string_neok)){$count++;
-                $html .= '<p class="ml-4">'.$count.'. Суммарная масса блюд по приемам пищи ('.mb_strtolower($yield_string_neok).') <b style="color:red;">не
-                        соответствует </b> регламентированным значениям для данной возрастной группы.  </p>';
-            }
 
             if(!empty($kkal_string_neok)){$count++;
 
@@ -9678,6 +9678,44 @@ require_once Yii::$app->basePath . '/Excel/PHPExcel.php';
                 $html .= '</tbody>
             </table>';
             }
+
+
+
+
+            if(!empty($yield_string_neok)){$count++;
+
+                $html .= '<table class="table_th0 table-hover ml-4">
+                <thead>
+                <tr>
+                    <th class="text-center align-middle" rowspan="2" style="width: 20px">Прием пищи</th>
+                    <th class="text-center align-middle" rowspan="2" style="width: 40px">Неделя</th>
+                    <th class="text-center align-middle" rowspan="2" style="width: 40px">День</th>
+                    <th class="text-center align-middle" rowspan="2" style="width: 40px">Значение</th>
+                    <th class="text-center align-middle" rowspan="2" style="width: 40px">Норматив</th>
+                </tr>
+                </thead>
+                <tbody>';
+                foreach($yield_neok_mas as $key => $yield_neok_m){
+                    if(!empty($yield_neok_m)){
+                        foreach($yield_neok_m as $value_v){  $explode_mas = explode('_',$value_v);
+                            $normativ_day = \common\models\NormativVitaminDayNew::find()->where(['name' => 'yield', 'nutrition_id' => $explode_mas[0], 'age_info_id' => $my_menus->age_info_id])->one()->value;
+                            $html .=
+                                '<tr>
+                                <td class="align-middle">'.\common\models\NutritionInfo::findOne($explode_mas[0])->name.'</td>
+                                <td class="align-middle">'. $explode_mas[1].'</td>
+                                <td class="align-middle">'.\common\models\Days::findOne($explode_mas[2])->name.'</td>
+                                <td class="text-center align-middle">'.round($explode_mas[3],1) .'</td>
+                                <td class="text-center align-middle">'.round($normativ_day,2).'</td>
+                            </tr>';
+                        }
+                    }
+                }
+                $html .= '</tbody>
+            </table>';
+            }
+
+
+
 
             if(!empty($vitamins_neok)){$count++;
                 $html .= '<p class="ml-4">'.$count.'. Потребность в витаминах и минеральных веществах <b style="color:red;">не соответствует</b> регламентированным показателям:</p>
@@ -10032,6 +10070,23 @@ require_once Yii::$app->basePath . '/Excel/PHPExcel.php';
         }
     }
 
+    public function actionScr()
+    {
+        /*$menus_dishes2 = MenusDishes2::find()->where(['dishes_id' => 13])->all();
+        foreach($menus_dishes2 as $m_dish2){
+            $m_dish_new = new MenusDishes();
+            $m_dish_new->date_fact_menu = $m_dish2->date_fact_menu;
+            $m_dish_new->menu_id = $m_dish2->menu_id;
+            $m_dish_new->cycle = $m_dish2->cycle;
+            $m_dish_new->days_id = $m_dish2->days_id;
+            $m_dish_new->nutrition_id = $m_dish2->nutrition_id;
+            $m_dish_new->dishes_id = $m_dish2->dishes_id;
+            $m_dish_new->yield = $m_dish2->yield;
+            $m_dish_new->save();
+            print_r($m_dish2->dishes_id);
+        }
+        exit;*/
+    }
 
 
 }

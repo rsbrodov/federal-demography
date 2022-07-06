@@ -693,7 +693,7 @@ if(!empty($post)){
     <div class="text-center mt-5">
         <?if($post['cycle'] == 0){?>
             <?= Html::a('<span class="glyphicon glyphicon-download"></span> Экспорт в Excel',
-                ['excel-products-list?menu_id=' . $post['menu_id'].'&days_id='.$post['days_id'].'&count_children='.$post['yield']],
+                ['/prints/excel/excel-products-list?menu_id=' . $post['menu_id'].'&days_id='.$post['days_id'].'&count_children='.$post['yield']],
                 [
                     'class'=>'btn btn-secondary',
                     'style' =>['width'=>'500px'],
@@ -703,7 +703,7 @@ if(!empty($post)){
             ?>
         <?}else{?>
             <?= Html::a('<span class="glyphicon glyphicon-download"></span> Экспорт в Excel',
-                ['excel-products-list-nutrition?menu_id=' . $post['menu_id'].'&days_id='.$post['days_id'].'&count_children='.$post['yield']],
+                ['/prints/excel/excel-products-list-nutrition?menu_id=' . $post['menu_id'].'&days_id='.$post['days_id'].'&count_children='.$post['yield']],
                 [
                     'class'=>'btn btn-secondary',
                     'style' =>['width'=>'500px'],

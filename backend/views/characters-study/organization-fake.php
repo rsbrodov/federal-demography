@@ -117,7 +117,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-            <?if($count >= 3){$number++;?>
+            <?/*if($count >= 3){$number++;*/?>
+            <?if($count >= 0){$number++;?>
                 <tr>
                     <td><b><?=$number?></b></td>
                     <td><?=$organization->title?></td>

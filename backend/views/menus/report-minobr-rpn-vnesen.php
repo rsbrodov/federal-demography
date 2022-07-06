@@ -22,27 +22,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 $organization_id = Yii::$app->user->identity->organization_id;
-
 $region_id = Organization::findOne($organization_id)->region_id;
 
 if (Yii::$app->user->can('minobr') || Yii::$app->user->can('rospotrebnadzor_nutrition'))
 {
-    $municipalities = \common\models\Municipality::find()->where(['region_id' => $region_id])->all();
-    //$municipality_null = array(0 => 'Все муниципальные округа ...');
-    $municipality_items = ArrayHelper::map($municipalities, 'id', 'name');
-    //$municipality_items = ArrayHelper::merge($municipality_null, $municipality_items);
-    $organization = Organization::find()->where(['type_org' => 3, 'region_id' => $region_id])->all();
+    $municipality_items = Yii::$app->territory->municipalities($region_id, true, false);
 }
 if (Yii::$app->user->can('subject_minobr'))
 {
-    $my_org = Organization::findOne($organization_id);
-    $municipalities = \common\models\Municipality::find()->where(['id' =>$my_org->municipality_id])->all();
-    $municipality_items = ArrayHelper::map($municipalities, 'id', 'name');
-    $organization = Organization::find()->where(['type_org' => 3, 'municipality_id' => $my_org->municipality_id])->all();
+    $municipality_items = Yii::$app->territory->my_municipality();
 }
-$organization_null = array(0 => 'Все организации ...');
-$organization_items = ArrayHelper::map($organization, 'id', 'title');
-$organization_items = ArrayHelper::merge($organization_null, $organization_items);
+$organization_items = Yii::$app->territory->my_organizations();
 if (!empty($post))
 {
     $params_organization = ['class' => 'form-control', 'options' => [$post['organization_id'] => ['Selected' => true]]];

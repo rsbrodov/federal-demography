@@ -70,8 +70,6 @@ if(!empty($post)){
             $cycle_ids[$i] = $i;//массив из подходящи циклов
         }
     }
-
-
 }
 
 ?>
@@ -292,14 +290,14 @@ if(!empty($post)){
     </div>
         <br>
         <div class="text-center">
-            <?= Html::a('<span class="glyphicon glyphicon-download"></span> Скачать в Excel', ['export-menus-period?menu_id=' . $post['menu_id'].'&cycle='.$post['cycle']],
+            <?/*= Html::a('<span class="glyphicon glyphicon-download"></span> Скачать в Excel', ['export-menus-period?menu_id=' . $post['menu_id'].'&cycle='.$post['cycle']],
                 [
                     'class'=>'btn btn-secondary',
                     'style' =>['width'=>'500px'],
                     'title' => Yii::t('yii', 'Скачать отчет в формате Excel'),
                     'data-toggle'=>'tooltip',
                 ])
-            ?>
+            */?>
         </div>
 <?php } ?>
     <br>
