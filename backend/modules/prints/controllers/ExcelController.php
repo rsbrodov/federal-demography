@@ -168,35 +168,35 @@ class ExcelController extends Controller
                     $yield = $yield + $m_dish->yield;
 
                     //РАСЧЕТ ВИТАМИНА
-                    $vitamins['vitamin_a'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_a'), 2);
+                    $vitamins['vitamin_a'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_a'), 2);
                     $vitamin_a = $vitamin_a + $vitamins['vitamin_a'];
-                    $vitamins['vitamin_c'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_c'), 2);
+                    $vitamins['vitamin_c'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_c'), 2);
                     $vitamin_c = $vitamin_c + $vitamins['vitamin_c'];
-                    $vitamins['vitamin_b1'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_b1'), 2);
+                    $vitamins['vitamin_b1'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_b1'), 2);
                     $vitamin_b1 = $vitamin_b1 + $vitamins['vitamin_b1'];
-                    $vitamins['vitamin_b2'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_b2'), 2);
+                    $vitamins['vitamin_b2'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_b2'), 2);
                     $vitamin_b2 = $vitamin_b2 + $vitamins['vitamin_b2'];
-                    $vitamins['vitamin_d'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_d'), 2);
+                    $vitamins['vitamin_d'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_d'), 2);
                     $vitamin_d = $vitamin_d + $vitamins['vitamin_d'];
-                    $vitamins['vitamin_pp'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_pp'), 2);
+                    $vitamins['vitamin_pp'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_pp'), 2);
                     $vitamin_pp = $vitamin_pp + $vitamins['vitamin_pp'];
-                    $vitamins['na'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'na'), 2);
+                    $vitamins['na'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'na'), 2);
                     $na = $na + $vitamins['na'];
-                    $vitamins['k'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'k'), 2);
+                    $vitamins['k'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'k'), 2);
                     $k = $k + $vitamins['k'];
-                    $vitamins['ca'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'ca'), 2);
+                    $vitamins['ca'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'ca'), 2);
                     $ca = $ca + $vitamins['ca'];
-                    $vitamins['f'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'f'), 2);
+                    $vitamins['f'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'f'), 2);
                     $f = $f + $vitamins['f'];
-                    $vitamins['mg'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'mg'), 2);
+                    $vitamins['mg'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'mg'), 2);
                     $mg = $mg + $vitamins['mg'];
-                    $vitamins['p'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'p'), 2);
+                    $vitamins['p'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'p'), 2);
                     $p = $p + $vitamins['p'];
-                    $vitamins['fe'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'fe'), 2);
+                    $vitamins['fe'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'fe'), 2);
                     $fe = $fe + $vitamins['fe'];
-                    $vitamins['i'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'i'), 2);
+                    $vitamins['i'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'i'), 2);
                     $i = $i + $vitamins['i'];
-                    $vitamins['se'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'se'), 2);
+                    $vitamins['se'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'se'), 2);
                     $se = $se + $vitamins['se'];
                     //КОНЕЦ РАСЧЕТА
 
@@ -545,35 +545,35 @@ class ExcelController extends Controller
                             $energy_kkal = $energy_kkal + $kkal;
 
                             //РАСЧЕТ ВИТАМИНА
-                            $vitamins['vitamin_a'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_a'), 2);
+                            $vitamins['vitamin_a'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_a'), 2);
                             $vitamin_a = $vitamin_a + $vitamins['vitamin_a'];
-                            $vitamins['vitamin_c'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_c'), 2);
+                            $vitamins['vitamin_c'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_c'), 2);
                             $vitamin_c = $vitamin_c + $vitamins['vitamin_c'];
-                            $vitamins['vitamin_b1'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_b1'), 2);
+                            $vitamins['vitamin_b1'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_b1'), 2);
                             $vitamin_b1 = $vitamin_b1 + $vitamins['vitamin_b1'];
-                            $vitamins['vitamin_b2'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_b2'), 2);
+                            $vitamins['vitamin_b2'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_b2'), 2);
                             $vitamin_b2 = $vitamin_b2 + $vitamins['vitamin_b2'];
-                            $vitamins['vitamin_d'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_d'), 2);
+                            $vitamins['vitamin_d'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_d'), 2);
                             $vitamin_d = $vitamin_d + $vitamins['vitamin_d'];
-                            $vitamins['vitamin_pp'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'vitamin_pp'), 2);
+                            $vitamins['vitamin_pp'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'vitamin_pp'), 2);
                             $vitamin_pp = $vitamin_pp + $vitamins['vitamin_pp'];
-                            $vitamins['na'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'na'), 2);
+                            $vitamins['na'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'na'), 2);
                             $na = $na + $vitamins['na'];
-                            $vitamins['k'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'k'), 2);
+                            $vitamins['k'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'k'), 2);
                             $k = $k + $vitamins['k'];
-                            $vitamins['ca'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'ca'), 2);
+                            $vitamins['ca'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'ca'), 2);
                             $ca = $ca + $vitamins['ca'];
-                            $vitamins['f'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'f'), 2);
+                            $vitamins['f'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'f'), 2);
                             $f = $f + $vitamins['f'];
-                            $vitamins['mg'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'mg'), 2);
+                            $vitamins['mg'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'mg'), 2);
                             $mg = $mg + $vitamins['mg'];
-                            $vitamins['p'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'p'), 2);
+                            $vitamins['p'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'p'), 2);
                             $p = $p + $vitamins['p'];
-                            $vitamins['fe'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'fe'), 2);
+                            $vitamins['fe'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'fe'), 2);
                             $fe = $fe + $vitamins['fe'];
-                            $vitamins['i'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'i'), 2);
+                            $vitamins['i'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'i'), 2);
                             $i = $i + $vitamins['i'];
-                            $vitamins['se'] = round($m_dish->get_vitamin($m_dish->dishes_id, $m_dish->yield, 'se'), 2);
+                            $vitamins['se'] = round($m_dish->get_vitamin($m_dish->id, $m_dish->yield, 'se'), 2);
                             $se = $se + $vitamins['se'];
                             //КОНЕЦ РАСЧЕТА
 

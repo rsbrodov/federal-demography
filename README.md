@@ -5,12 +5,15 @@
     <h1 align="center">Федеральный проект "Демография"</h1>
     <br>
 </p>
-На GitHub представлена только малая часть исходного кода, чтобы не нарушать авторские права.
+На GitHub представлена только малая часть исходного кода, чтобы не нарушать авторские права. Это демо-версия Файлы с миграциями и relations между таблицами бд не включены в git в целях безопасности.
 <br>
 <br>
-Проект предназначен для мониторинга здоровья детей, поставки продуктов в образовательные учреждения, а также для создания меню. Разработан целый модуль с актуальными нормативами, который позволяет получить заключение по меню, его химический анализ и значения БЖУ. Надзорные органы имееют доступ к отчетности и могут мониторировать ситуацию по своей области.
-Доступ открыт только авторизированным пользователям [Ссылка](https://demography.site/)
-Плейлист по разработтанной программе для ознакомления в YouTube [Ссылка](https://www.youtube.com/watch?v=JkNNbeFgAug&list=PLgTNF8hfADHk5D_ouj2JvaSspTyoSUzTE&index=9&ab_channel=%D0%A4%D0%91%D0%A3%D0%9D%D0%9D%D0%9E%D0%92%D0%9E%D0%A1%D0%98%D0%91%D0%98%D0%A0%D0%A1%D0%9A%D0%98%D0%99%D0%9D%D0%98%D0%98%D0%93%D0%98%D0%93%D0%98%D0%95%D0%9D%D0%AB%D0%A0%D0%9E%D0%A1%D0%9F%D0%9E%D0%A2%D0%A0%D0%95%D0%91%D0%9D%D0%90%D0%94%D0%97%D0%9E%D0%A0%D0%90/)
+Федеральный проект по контролю над образовательными учреждениями. Сервис по разработке меню и мониторингу его надзорными органами. Мониторинг над инфляцией и поставками продуктов в учреждения. Система взаимодействия операторов питания с образовательными учреждениями. Химический анализ блюд, продуктов и меню. Экспертиза.
+
+[Ссылка](https://demography.site/)
+Плейлист по разработтанной программе для ознакомления в YouTube 
+
+[Ссылка](https://www.youtube.com/watch?v=JkNNbeFgAug&list=PLgTNF8hfADHk5D_ouj2JvaSspTyoSUzTE&index=9&ab_channel=%D0%A4%D0%91%D0%A3%D0%9D%D0%9D%D0%9E%D0%92%D0%9E%D0%A1%D0%98%D0%91%D0%98%D0%A0%D0%A1%D0%9A%D0%98%D0%99%D0%9D%D0%98%D0%98%D0%93%D0%98%D0%93%D0%98%D0%95%D0%9D%D0%AB%D0%A0%D0%9E%D0%A1%D0%9F%D0%9E%D0%A2%D0%A0%D0%95%D0%91%D0%9D%D0%90%D0%94%D0%97%D0%9E%D0%A0%D0%90/)
 
 ИНСТРУМЕНТЫ И ТЕХНОЛОГИИ:
 -------------------
@@ -59,38 +62,6 @@
 
 ![image](https://user-images.githubusercontent.com/55738777/162408640-cc040d8a-a149-4a06-8458-02e94785e322.png)
 
+![image](https://user-images.githubusercontent.com/55738777/177959143-3f5c13a3-36b2-4dd0-bf21-c372d3f8ca71.png)
 
-```
-common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
-    tests/               contains tests for common classes    
-console
-    config/              contains console configurations
-    controllers/         contains console controllers (commands)
-    migrations/          contains database migrations
-    models/              contains console-specific model classes
-    runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for backend application    
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-frontend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for frontend application
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
-vendor/                  contains dependent 3rd-party packages
-environments/            contains environment-based overrides
-```
+![image](https://user-images.githubusercontent.com/55738777/177959235-fe0247ce-c2f6-4792-8794-64fe8097b927.png)

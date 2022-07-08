@@ -7,10 +7,12 @@ use common\models\Days;
 use common\models\MenuSearch;
 use common\models\MenusOrgRpnMinobr;
 use common\models\MenusSend;
+use common\models\MenusVariativity;
 use common\models\NutritionApplications;
 use common\models\NutritionInfo;
 use common\models\Organization;
 use common\models\SelectOrgForm;
+use common\models\Variativity;
 use Yii;
 use common\models\Menus;
 use common\models\MenusNutrition;
@@ -46,14 +48,15 @@ class MenusController extends Controller
 
     public function actionIndex()
     {
-        $expression = "(SELECT COUNT(*) * m.cycle FROM menus_days AS md WHERE m.id = md.menu_id) AS days_count";
         $dataProvider = new ActiveDataProvider([
-            'query' => (new Query())
-                ->select(['m.*', 'fc.name AS feeders_characters_name', 'ai.name AS age_info_name'])
-                ->addSelect($expression)
-                ->from(['m' => 'menus']) //алиас "d"
-                ->leftJoin('feeders_characters AS fc', 'm.feeders_characters_id = fc.id')
-                ->leftJoin('age_info AS ai', 'm.age_info_id = ai.id')
+            'query' => Menus::find()->select(['*'])
+                ->with([
+                           'characters' => function($q){
+                               return $q->select(['id', 'name']);
+                           },
+                           'age' => function($q){
+                               return $q->select(['id', 'name']);
+                           }])
                 ->where(['status_archive' => 0, 'organization_id' => Yii::$app->user->identity->organization_id]),
             'pagination' => [
                 'pageSize' => 15,
@@ -111,7 +114,7 @@ class MenusController extends Controller
 
         if(Yii::$app->user->can('camp_director')){
             $dataProvider = new ActiveDataProvider([
-                'query' => Menus::find()->where(['status_archive' => 1, 'show_indicator' => [2, 7, 9]])->orWhere(['organization_id' => Yii::$app->user->identity->organization_id, 'status_archive' => 1]),
+                'query' => Menus::find()->where(['status_archive' => 1, 'show_indicator' => [2, 7, 9, 6]])->orWhere(['organization_id' => Yii::$app->user->identity->organization_id, 'status_archive' => 1]),
             ]);
         }
 
@@ -214,6 +217,7 @@ class MenusController extends Controller
                     $model2->cycle = 1;
                     $model2->date_start = strtotime(Yii::$app->request->post()['MenuForm']['date_start']);
                     $model2->date_end = strtotime($post['date_start']);
+                    $model2->variativity = Yii::$app->request->post()['MenuForm']['variativity'];
                     $model2->status_archive = 0;
                     //ГОВОРИМ ЧТО У НАС ТОЛЬКО ОДИН ДЕНЬ И ЭТО ПОНЕДЕЛЬНИК
                     $day_of_week = date("w", strtotime($post['date_start']));//День недели выбранной даты
@@ -235,6 +239,7 @@ class MenusController extends Controller
                     $model2->cycle = Yii::$app->request->post()['MenuForm']['cycles'];
                     $model2->date_start = strtotime(Yii::$app->request->post()['MenuForm']['date_start']);
                     $model2->date_end = strtotime(Yii::$app->request->post()['MenuForm']['date_end']);
+                    $model2->variativity = Yii::$app->request->post()['MenuForm']['variativity'];
                     $model2->status_archive = 0;
                 }
             //ЕСЛИ ПОЛЬЗОВАТЕЛЬ ЯВЛЯЕТСЯ ЛЮБЫМ ДРУГИМ ЮЗЕРОМ
@@ -258,6 +263,7 @@ class MenusController extends Controller
                 $model2->cycle = Yii::$app->request->post()['MenuForm']['cycles'];
                 $model2->date_start = strtotime(Yii::$app->request->post()['MenuForm']['date_start']);
                 $model2->date_end = strtotime(Yii::$app->request->post()['MenuForm']['date_end']);
+                $model2->variativity = Yii::$app->request->post()['MenuForm']['variativity'];
                 $model2->status_archive = 0;
             }
             //БЛОК ОБЩЕЙ ИНФОРМАЦИИ И ДАННЫХ СКОЛЬКО ДНЕЙ В МЕНЮ И ПРИЕМОВ ПИЩИ
@@ -330,6 +336,36 @@ class MenusController extends Controller
                         $rpn_minobr->save();
                     }
                 }
+                if(Yii::$app->request->post()['MenuForm']['variativity'] == 1) {
+                    $variativity_mas = [
+                        'zavtrak_kashi_garniri_yaich' => 'zavtrak_kashi_garniri_yaich',
+                        'zavtrak_masn_ryb' => 'zavtrak_masn_ryb',
+                        'zavtrak_napitki' => 'zavtrak_napitki',
+                        'zavtrak_souse' => 'zavtrak_souse',
+                        'obed_pervie' => 'obed_pervie',
+                        'obed_holod' => 'obed_holod',
+                        'obed_garniri' => 'obed_garniri',
+                        'obed_myasn_ryb' => 'obed_myasn_ryb',
+                        'obed_napitki' => 'obed_napitki',
+                        'obed_souse' => 'obed_souse',
+                        'ushin_holod' => 'ushin_holod',
+                        'ushin_garniri' => 'ushin_garniri',
+                        'ushin_myas_ryb' => 'ushin_myas_ryb',
+                        'ushin_napitki' => 'ushin_napitki',
+                        'ushin_souse' => 'ushin_souse',
+                    ];
+                    foreach ($variativity_mas as $v){
+                        if(Yii::$app->request->post()['MenuForm'][$v] == 1){
+                            $new_menus_variativity = new MenusVariativity();
+                            $new_menus_variativity->organization_id = Yii::$app->user->identity->organization_id;
+                            $new_menus_variativity->menu_id = $model2->id;
+                            $new_menus_variativity->variativity_id = Variativity::find()->where(['name' => $v])->one()->block_id;
+                            $new_menus_variativity->save();
+                        }
+                    }
+                }
+
+
                 Yii::$app->session->setFlash('success', "Меню успешно сохранено");
                 return $this->redirect(['menus/index']);
 
@@ -461,6 +497,7 @@ class MenusController extends Controller
             $model2->feeders_characters_id = $model->feeders_characters_id;
             $model2->age_info_id = $model->age_info_id;
             $model2->name = $model->name;
+            $model2->variativity = $model->variativity;
             $model2->cycle = $model->cycle;
             $model2->date_start = $model->date_start;
             $model2->date_end = $model->date_end;
@@ -497,6 +534,18 @@ class MenusController extends Controller
                     $model5->yield = $m_dish->yield;
                     $model5->save();
                 }
+
+                if($model->variativity == 1) {
+                    $variativity_menu = MenusVariativity::find()->where(['menu_id' => $model->id])->all();
+                    foreach ($variativity_menu as $v){
+                        $new_menus_variativity = new MenusVariativity();
+                        $new_menus_variativity->organization_id = Yii::$app->user->identity->organization_id;
+                        $new_menus_variativity->menu_id = $model2->id;
+                        $new_menus_variativity->variativity_id = $v->variativity_id;
+                        $new_menus_variativity->save();
+                    }
+                }
+
                 Yii::$app->session->setFlash('success', "Меню успешно добавлено в архив. ". Html::a("Перейти в архив.", "/menus/archive"));
                 return $this->redirect(['menus/index']);
             }
@@ -561,6 +610,18 @@ class MenusController extends Controller
                 $model5->yield = $m_dish->yield;
                 $model5->save(false);
             }
+
+            if($model->variativity == 1) {
+                $variativity_menu = MenusVariativity::find()->where(['menu_id' => $model->id])->all();
+                foreach ($variativity_menu as $v){
+                    $new_menus_variativity = new MenusVariativity();
+                    $new_menus_variativity->organization_id = Yii::$app->user->identity->organization_id;
+                    $new_menus_variativity->menu_id = $model2->id;
+                    $new_menus_variativity->variativity_id = $v->variativity_id;
+                    $new_menus_variativity->save();
+                }
+            }
+
             Yii::$app->session->setFlash('success', "Это архивное меню было успешно подгружено к Вам. ". Html::a("Перейти к своим меню.", "/menus/index"));
             return $this->redirect(['menus/archive']);
         }
@@ -588,8 +649,6 @@ class MenusController extends Controller
         $menus = Menus::findOne($id);
         $menus_days = MenusDays::find()->where(['menu_id' => $id])->all();
         $menus_nutrition = MenusNutrition::find()->where(['menu_id' => $id])->all();
-
-
         if (Yii::$app->request->post()) {
             /*print_r(date("d.m.Y", strtotime(Yii::$app->request->post()['MenuForm']['date_start'])));
             exit;*/
@@ -617,6 +676,7 @@ class MenusController extends Controller
             $model2->cycle = Yii::$app->request->post()['MenuForm']['cycles'];
             $model2->date_start = strtotime(Yii::$app->request->post()['MenuForm']['date_start']);
             $model2->date_end = strtotime(Yii::$app->request->post()['MenuForm']['date_end']);
+            $model2->variativity = Yii::$app->request->post()['MenuForm']['variativity'];
             if($model2->save()){
 
                 $old_menus_days = MenusDays::deleteAll('menu_id =:id', [':id' => $id]);
@@ -706,9 +766,36 @@ class MenusController extends Controller
                         }
                     }
                 }
-                /*Конец удаления*/
-                /*print_r($count);
-                exit;*/
+
+                MenusVariativity::deleteAll('menu_id =:id', [':id' => $model2->id]);
+                if(Yii::$app->request->post()['MenuForm']['variativity'] == 1) {
+                    $variativity_mas = [
+                        'zavtrak_kashi_garniri_yaich' => 'zavtrak_kashi_garniri_yaich',
+                        'zavtrak_masn_ryb' => 'zavtrak_masn_ryb',
+                        'zavtrak_napitki' => 'zavtrak_napitki',
+                        'zavtrak_souse' => 'zavtrak_souse',
+                        'obed_pervie' => 'obed_pervie',
+                        'obed_holod' => 'obed_holod',
+                        'obed_garniri' => 'obed_garniri',
+                        'obed_myasn_ryb' => 'obed_myasn_ryb',
+                        'obed_napitki' => 'obed_napitki',
+                        'obed_souse' => 'obed_souse',
+                        'ushin_holod' => 'ushin_holod',
+                        'ushin_garniri' => 'ushin_garniri',
+                        'ushin_myas_ryb' => 'ushin_myas_ryb',
+                        'ushin_napitki' => 'ushin_napitki',
+                        'ushin_souse' => 'ushin_souse',
+                    ];
+                    foreach ($variativity_mas as $v){
+                        if(Yii::$app->request->post()['MenuForm'][$v] == 1){
+                            $new_menus_variativity = new MenusVariativity();
+                            $new_menus_variativity->organization_id = Yii::$app->user->identity->organization_id;
+                            $new_menus_variativity->menu_id = $model2->id;
+                            $new_menus_variativity->variativity_id = Variativity::find()->where(['name' => $v])->one()->block_id;
+                            $new_menus_variativity->save();
+                        }
+                    }
+                }
 
                 Yii::$app->session->setFlash('success', "Меню успешно сохранено");
                 return $this->redirect(['index']);
@@ -730,7 +817,6 @@ class MenusController extends Controller
 
     public function actionSettingArchive($id)
     {
-        //$model = $this->findModel($id);
         $my_org = Organization::findOne(Yii::$app->user->identity->organization_id);
         $model = new Menus();
         $menus = Menus::findOne($id);
@@ -739,8 +825,6 @@ class MenusController extends Controller
 
 
         if (Yii::$app->request->post()) {
-            /*print_r(Yii::$app->request->post());
-            exit;*/
             $post = Yii::$app->request->post()['Menus'];
             $model2 = Menus::findOne($id);
 
@@ -789,23 +873,38 @@ class MenusController extends Controller
     public function actionDelete($id)
     {
         /*Массовое удаление меню из всех таблиц при удалении меню*/
-        $this->findModel($id)->delete();
-
-
-
+        $menu = $this->findModel($id);
+        $old_menus_days = MenusDays::deleteAll('menu_id =:id', [':id' => $id]);
+        $old_menus_nutrition = MenusNutrition::deleteAll('menu_id =:id', [':id' => $id]);
+        $old_menus_dishes = MenusDishes::deleteAll('menu_id =:id', [':id' => $id]);
+        if($menu->variativity == 1) {
+            $variativity_menu = MenusVariativity::find()->where(['menu_id' => $menu->id])->all();
+            foreach ($variativity_menu as $v){
+                $v->delete();
+            }
+        }
+        $menu->delete();
         return $this->redirect(['index']);
     }
 
     public function actionDeleteArchive($id)
     {
         /*Массовое удаление меню из всех таблиц при удалении меню*/
-        $this->findModel($id)->delete();
 
+        $menu = $this->findModel($id);
         $old_menus_days = MenusDays::deleteAll('menu_id =:id', [':id' => $id]);
 
         $old_menus_nutrition = MenusNutrition::deleteAll('menu_id =:id', [':id' => $id]);
 
         $old_menus_dishes = MenusDishes::deleteAll('menu_id =:id', [':id' => $id]);
+
+        if($menu->variativity == 1) {
+            $variativity_menu = MenusVariativity::find()->where(['menu_id' => $menu->id])->all();
+            foreach ($variativity_menu as $v){
+                $v->delete();
+            }
+        }
+        $menu->delete();
         Yii::$app->session->setFlash('success', "Меню успешно удалено!");
 
         return $this->redirect(['archive']);
@@ -1223,8 +1322,6 @@ class MenusController extends Controller
                         $ids[] = $n_aplication->reciever_org_id;
                     }
                 }
-
-
                 $organization_id = Yii::$app->user->identity->organization_id;
                 $org = Organization::findOne($organization_id);
                 $organizations = Organization::find()->where(['id' => $ids])->all();
@@ -1247,7 +1344,6 @@ class MenusController extends Controller
 
     }
 
-
     public function actionMyMonitoring()
     {
         $model = new Menus();
@@ -1258,10 +1354,7 @@ class MenusController extends Controller
                 'model' => $model,
             ]);
     }
-	
-	
-	
-	
+
 	 public function actionMenusMonitoring()
     {
         $menus = Menus::find()->where(['organization_id' => Yii::$app->user->identity->organization_id, 'status_archive' => 0])->all();
@@ -1269,55 +1362,6 @@ class MenusController extends Controller
             return $this->render('menus-monitoring', [
                 'menus' => $menus,
             ]);
-    }
-
-
-    /*Подставляет организации в выпадающий список*/
-    public function actionOrglist($id){
-        $organization_id = Yii::$app->user->identity->organization_id;
-        $region_id = Organization::findOne($organization_id)->region_id;
-
-        if($id == 0){
-            if (Yii::$app->user->can('rospotrebnadzor_camp')){
-                $groups = Organization::find()->where(['region_id' => $region_id,'type_org' => 3])->orderby(['title' => SORT_ASC])->all();
-            }else{
-                $groups = Organization::find()->where(['region_id' => $region_id,'type_org' => 4])->orderby(['title' => SORT_ASC])->all();
-            }
-
-            echo '<option value="0">Все организации...</option>';
-        }else{
-            if (Yii::$app->user->can('rospotrebnadzor_camp')){
-                $groups = Organization::find()->where(['region_id' => $region_id, 'municipality_id'=>$id, 'type_org' => 4])->orderby(['title' => SORT_ASC])->all();
-            }else{
-                $groups = Organization::find()->where(['region_id' => $region_id, 'municipality_id'=>$id, 'type_org' => 3])->orderby(['title' => SORT_ASC])->all();
-            }
-            echo '<option value="0">Все организации...</option>';
-        }
-
-        if(!empty($groups)){
-            foreach ($groups as $key => $group) {
-                echo '<option value="'.$group->id.'">'.$group->title.'</option>';
-            }
-        }
-    }
-
-	public function actionOrglist2($id){
-        $organization_id = Yii::$app->user->identity->organization_id;
-        $region_id = Organization::findOne($organization_id)->region_id;
-
-        if($id == 0){
-            $groups = Organization::find()->where(['region_id' => $region_id,'type_org' => 3])->orderby(['title' => SORT_ASC])->all();
-        }else{
-            $groups = Organization::find()->where(['municipality_id'=> $id, 'type_org' => 3])->orderby(['title' => SORT_ASC])->all();
-
-        }
-        //print_r($groups);exit;
-
-        if(!empty($groups)){
-            foreach ($groups as $key => $group) {
-                echo '<option value="'.$group->id.'">'.$group->title.'</option>';
-            }
-        }
     }
 
     public function actionScriptReplace()
@@ -1348,16 +1392,4 @@ class MenusController extends Controller
 
     }
 
-
-    /*Подставляет организации в выпадающий список*/
-    public function actionOrgcity($id){
-        $cities = Organization::find()->where(['city_id' => $id])->all();
-        $return = '<option value="0">Все организации района</option>';
-        if(!empty($cities)){
-            foreach ($cities as $key => $city) {
-                $return .= '<option value="'.$city->id.'">'.$city->short_title.'</option>';
-            }
-        }
-        return $return;
-    }
 }

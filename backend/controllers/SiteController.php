@@ -29,12 +29,12 @@ class SiteController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'logout', 'error', 'signup', 'subjectslist', 'subjectslistnutrition','municipalitylist', 'mail', 'signup-nutrition', 'orglist2'],
+                        'actions' => ['login', 'logout', 'error', 'signup', 'mail', 'signup-nutrition'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['login', 'logout', 'index', 'select-organization', 'session-delete', 'error', 'subjectslist', 'subjectslistnutrition','municipalitylist', 'orglist' , 'orglist2', 'orglist3', 'download-document-index', 'download-document'],
+                        'actions' => ['login', 'logout', 'index', 'select-organization', 'session-delete', 'error', 'download-document-index', 'download-document'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -79,12 +79,7 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-		/*$timess = UserAutorizationStatistic::find()->all();
-        foreach($timess as $times){
-            /times->user_id = Yii::$app->user->id;
-            $times->time_auth = strtotime($times->created_at);
-            $times->save();
-        }*/
+
         if (!Yii::$app->user->isGuest) {
             return $this->redirect(['/site/index']);
         }
@@ -104,13 +99,7 @@ class SiteController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-			 if(Yii::$app->user->id > 1){
-                $stat = new UserAutorizationStatistic();
-                $stat->user_id = Yii::$app->user->id;
-                $stat->time_auth = time();
-                $stat->save();
-                //print_r($stat);exit;
-            }
+			 
             return $this->goBack();
         } else {
             $model->password = '';
@@ -231,13 +220,13 @@ class SiteController extends Controller
                     $r->assign($assign, $user->id);
 
                     //ОТКЛЮЧИЛИ НА ГЕГЕМОНЕ ОТПРАВКУ ПИСЕМ
-                    //$message = Yii::$app->mailer->compose();
-                    //$message->setFrom(['registration@niig.su' => 'registration@niig.su']);
-                    /*$message->setTo($user->email)
+                    $message = Yii::$app->mailer->compose();
+                    $message->setFrom(['1@niig.su' => '1@niig.su']);
+                    $message->setTo($user->email)
                         ->setSubject('Оценка эффективности оздоровления детей')
                         ->setHtmlBody('<p>Добрый день, ' . $user->name . '!</p><p>Вы были зарегистрированы в программе. <p>Логин:' . Yii::$app->request->post()['SignupForm']['email'] . ' </p> <p>Пароль:' . Yii::$app->request->post()['SignupForm']['password'] . ' </p><p>Перейти к программному средству Вы можете по <a href="https://demography.site/" >ссылке</a>. <br> Ваша заявка будет не активирована и авторизоваться в системе Вы не сможете.
 Доступ для входа в программное средство Вам будет открыт в течении 48 часов, после проверки Вашей заявки.</p>');
-$message->send();*/
+$message->send();
                     Yii::$app->session->setFlash('success', "Заявка на регистрацию в программе отправлена! В течение 48 часов она будет расмотрена и Вы сможете зайти в систему.");
 		    return $this->goHome();
 
@@ -326,13 +315,13 @@ $message->send();*/
                         $assign = $r->createRole($role);
                         $r->assign($assign, $user->id);
 
-  			/*
+
                         $message = Yii::$app->mailer->compose();
-                        $message->setFrom(['registration@niig.su' => 'registration@niig.su']);
+                        $message->setFrom(['1@niig.su' => '1@niig.su']);
                         $message->setTo($user->email)
                             ->setSubject('Программа оценка эффективности и организации оздоровления детей')
                             ->setHtmlBody('<p>Добрый день, ' . $user->name . '!</p><p>Вы были зарегистрированы в программе. <p>Логин:' . Yii::$app->request->post()['SignupForm']['email'] . ' </p> <p>Пароль:' . Yii::$app->request->post()['SignupForm']['password'] . ' </p><p>Перейти к программному средству Вы можете по <a href="http://niig.su" >ссылке</a>. Баннер: "Пилотный проект оценка эффективности оздоровления детей".  Вход в программное средство будет доступен в течении 48 часов.</p>');
-			$message->send();*/
+			$message->send();
 
                     }
                     else
@@ -407,7 +396,7 @@ $message->send();*/
                     //ОТКЛЮЧИЛИ НА ГЕГЕМОНЕ ОТПРАВКУ ПИСЕМ
 					
                     $message = Yii::$app->mailer->compose();
-                    $message->setFrom(['57b66227@niig.su' => '1@niig.su']);
+                    $message->setFrom(['1@niig.su' => '1@niig.su']);
                     $message->setTo($user->email)
                         ->setSubject('Программа Питание и мониторинг здоровья')
                         ->setHtmlBody('<p>Здравствуйте, ' . $user->name . '!</p><p>Вы были зарегистрированы в программе. <p>Логин:' . Yii::$app->request->post()['SignupForm']['email'] . ' </p> <p>Пароль:' . Yii::$app->request->post()['SignupForm']['password'] . ' </p><p>Перейти к программному средству Вы можете по <a href="https://demography.site/login" >ссылке</a>. Вход в программное средство будет доступен в течении 48 часов после момента регистрация, так как специалисты проверяют каждую заявку на правильность заполнения.</p>');
@@ -506,14 +495,14 @@ $message->send();*/
                         $assign = $r->createRole($role);
                         $r->assign($assign, $user->id);
 
-		        /*				
+
                         $message = Yii::$app->mailer->compose();
-                        $message->setFrom(['registration@niig.su' => 'registration@niig.su']);
+                        $message->setFrom(['1@niig.su' => '1@niig.su']);
                         $message->setTo($user->email)
-                            ->setSubject('Программа оценка эффективности и организации оздоровления детей')
+                            ->setSubject('Программа Мониторинг питания и здоровья')
                             ->setHtmlBody('<p>Добрый день, ' . $user->name . '!</p><p>Вы были зарегистрированы в программе. <p>Логин:' . Yii::$app->request->post()['SignupForm']['email'] . ' </p> <p>Пароль:' . Yii::$app->request->post()['SignupForm']['password'] . ' </p><p>Перейти к программному средству Вы можете по <a href="http://niig.su" >ссылке</a>. Баннер: "Пилотный проект оценка эффективности оздоровления детей".  Вход в программное средство будет доступен в течении 48 часов.</p>');
                         $message->send();
-			 */			
+
 
                     }
                     else
@@ -537,102 +526,6 @@ $message->send();*/
             'model' => $model,
         ]);
 
-    }
-   /*Подставляет регионы в выпадающий список ПИТАНИЕ ТОЛЬКО ОМСК и НОВОСИБ КЕМЕО*/
-    public function actionSubjectslistnutrition($id){
-
-        $groups = Region::find()->where(['district_id'=>$id])->orderby(['name' => SORT_ASC])->all();
-        //$groups = Region::find()->where(['id'=>[48, 49, 46]])->orderby(['name' => SORT_ASC])->all();
-
-        if($id == 1){
-
-        }
-        echo '<option value=" ">Выберите регион...</option>';
-        if(!empty($groups)){
-            foreach ($groups as $key => $group) {
-                echo '<option value="'.$group->id.'">'.$group->name.'</option>';
-            }
-        }
-    }
-
-
-    /*Подставляет регионы в выпадающий список ЛАГЕРЯ ВСЕ РЕГИОНЫ*/
-    public function actionSubjectslist($id){
-
-        $groups = Region::find()->where(['district_id'=>$id])->orderby(['name' => SORT_ASC])->all();
-        //$groups = Region::find()->where(['id'=>[48, 49]])->orderby(['name' => SORT_ASC])->all();
-
-        if($id == 1){
-
-        }
-        echo '<option value=" ">Выберите регион...</option>';
-        if(!empty($groups)){
-            foreach ($groups as $key => $group) {
-                echo '<option value="'.$group->id.'">'.$group->name.'</option>';
-            }
-        }
-    }
-    /*Подставляет муниципальные образования в выпадающий список*/
-    public function actionMunicipalitylist($id){
-
-        $groups = Municipality::find()->where(['region_id'=>$id])->orderby(['name' => SORT_ASC])->all();
-
-        echo '<option value=" ">Выберите муниципальное образование...</option>';
-        if(!empty($groups)){
-            foreach ($groups as $key => $group) {
-                echo '<option value="'.$group->id.'">'.$group->name.'</option>';
-            }
-        }
-    }
-
-    /*Подставляет организации в выпадающий список*/
-    public function actionOrglist($id){
-        //Если Вы организатор питания
-        if(Organization::findOne(Yii::$app->user->identity->organization_id)->type_org == 4){
-            $groups = Organization::find()->where(['municipality_id'=>$id, 'type_org' => 3])->orderby(['title' => SORT_ASC])->all();
-            echo '<option value=" ">Выберите образовательную организацию...</option>';
-        }
-        //Если Вы представитель школы
-        if(Organization::findOne(Yii::$app->user->identity->organization_id)->type_org == 3){
-            $groups = Organization::find()->where(['municipality_id'=>$id, 'type_org' => 4])->orderby(['title' => SORT_ASC])->all();
-            echo '<option value=" ">Выберите организатора питания...</option>';
-        }
-
-
-        if(!empty($groups)){
-            foreach ($groups as $key => $group) {
-                echo '<option value="'.$group->id.'">'.$group->title.'</option>';
-            }
-        }
-    }
-	
-	
-	public function actionOrglist2($id){
-        //Если Вы организатор питания
-
-            $groups = Organization::find()->where(['municipality_id'=>$id, 'type_org' => 1])->orderby(['title' => SORT_ASC])->all();
-            echo '<option value=" ">Выберите организацию...</option>';
-
-        if(!empty($groups)){
-            foreach ($groups as $key => $group) {
-                echo '<option value="'.$group->id.'">'.$group->title.'</option>';
-            }
-        }
-    }
-	
-	/*Подставляет организации в выпадающий список орг пит выбирает орг пита*/
-    public function actionOrglist3($id){
-        //Если Вы организатор питания
-        if(Organization::findOne(Yii::$app->user->identity->organization_id)->type_org == 4){
-            $groups = Organization::find()->where(['municipality_id'=>$id, 'type_org' => 4])->orderby(['title' => SORT_ASC])->all();
-            echo '<option value=" ">Выберите организатора питания...</option>';
-        }
-
-        if(!empty($groups)){
-            foreach ($groups as $key => $group) {
-                echo '<option value="'.$group->id.'">'.$group->title.'</option>';
-            }
-        }
     }
 
     public function actionDownloadDocument($name){

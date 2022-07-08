@@ -21,6 +21,15 @@ return [
         'prints' => [
             'class' => 'backend\modules\prints\PrintModules',
         ],
+        'visit' => [
+            'class' => 'backend\modules\visit\VisitModules',
+        ],
+        'menus-module' => [
+            'class' => 'backend\modules\menus\MenusModules',
+        ],
+        'dropdown' => [
+            'class' => 'backend\modules\dropdown\DropDownModules',
+        ],
     ],
     'components' => [
         'request' => [
@@ -125,6 +134,9 @@ return [
         //myComponents
         'territory' => [
             'class' => 'app\components\TerritoryComponent',
+        ],
+        'chemical_value' => [
+            'class' => 'app\components\ChemicalValueComponent',
         ],
         
     ],
