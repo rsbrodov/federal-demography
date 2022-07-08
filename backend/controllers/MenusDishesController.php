@@ -112,11 +112,7 @@ class MenusDishesController extends Controller
                 'post' => $post,
             ]);
         }
-
-
         return $this->render('index', [
-            //'menus_dishes' => $menus_dishes,
-            //'nutritions' => $nutritions,
             'model' => $model,
         ]);
     }
@@ -10087,6 +10083,7 @@ require_once Yii::$app->basePath . '/Excel/PHPExcel.php';
         }
         exit;*/
     }
+
 
 
 }

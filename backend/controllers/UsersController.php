@@ -709,4 +709,23 @@ class UsersController extends Controller
 
         //return $this->goHome();
     }
+
+    public function actionGenerateNewPassword($id){
+        $user = User::findOne($id);
+        $password = '';
+        $arr = array(
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+            'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
+        );
+        for ($i = 0; $i < 6; $i++) {
+            $password .= $arr[random_int(0, count($arr) - 1)];
+        }
+        print_r('Новый пароль для пользователя '.$user->name.': <b style="font-size: 27px;"> '.$password.'</b>. Логин пользователя: <b>'.$user->login.'</b><br> Пароль начинает действовать с этого момента, после ухода с этой страницы Вы больше не сможете увидить актуальный пароль, только сгенерировать новый.<small><a href="http://demography.site/users/index"> (Вернуться обратно)</a></small>');
+        $user->setPassword($password);;
+        $user->save();
+        exit;
+    }
 }
