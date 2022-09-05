@@ -2,10 +2,9 @@
 
 namespace common\models;
 
-use Yii;
-use common\models\RecipesCollection;
 use common\models\DishesCategory;
-use yii\db\ActiveQuery;
+use common\models\RecipesCollection;
+use Yii;
 
 
 /**
@@ -40,7 +39,7 @@ class Dishes extends \yii\db\ActiveRecord
     {
         return $this->hasOne(DishesCategory::className(), ['id' => 'dishes_category_id']);
     }
-    public function getProducts(): ActiveQuery
+    public function getProducts()
     {
         return $this->hasMany(DishesProducts::className(), ['dishes_id' => 'id']);
     }

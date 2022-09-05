@@ -5,8 +5,7 @@ namespace common\models;
 use Yii;
 use common\models\FeedersCharacters;
 use common\models\AgeInfo;
-
-
+use MenusInterface;
 
 /**
  * This is the model class for table "menus".
@@ -22,7 +21,7 @@ use common\models\AgeInfo;
  * @property int $status_archive
  * @property string $created_at
  */
-class Menus extends \yii\db\ActiveRecord
+class Menus extends \yii\db\ActiveRecord implements MenusInterface
 {
     /**
      * {@inheritdoc}
@@ -38,8 +37,8 @@ class Menus extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['organization_id', 'feeders_characters_id', 'age_info_id', 'name', 'cycle', 'type_org_id'], 'required'],
-            [['organization_id', 'feeders_characters_id', 'age_info_id', 'cycle', 'status_archive', 'show_indicator', 'parent_id', 'type_org_id'], 'integer'],
+            [['organization_id', 'feeders_characters_id', 'age_info_id', 'name', 'cycle'], 'required'],
+            [['organization_id', 'feeders_characters_id', 'age_info_id', 'cycle', 'status_archive', 'show_indicator', 'parent_id'], 'integer'],
             [['date_start', 'date_end', 'created_at', 'updated_at', 'show_indicator'], 'safe'],
             //[['name'], 'string', 'max' => 255],
         ];
@@ -55,7 +54,6 @@ class Menus extends \yii\db\ActiveRecord
             'organization_id' => 'Организация',
             'feeders_characters_id' => 'Характеристика питающихся',
             'parent_id' => 'parent_id',
-            'type_org_id' => 'Для кого разработано меню',
             'age_info_id' => 'Возрастная категория',
             'name' => 'Название',
             'cycle' => 'Количество недель (цикл)',
@@ -71,11 +69,6 @@ class Menus extends \yii\db\ActiveRecord
         $category = FeedersCharacters::findOne($id);
         return $category->name;
     }
-    public function get_sroki($menu_id){
-        $menus_days = Menus::findOne($menu_id);
-        return date("d.m.Y", $menus_days->date_start).' - '.date("d.m.Y", $menus_days->date_end);
-    }
-
 
     public function get_date($id){
 
